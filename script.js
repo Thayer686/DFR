@@ -1,0 +1,523 @@
+console.log("Daily Field Report form loaded.");
+
+let listData = {};
+
+function loadLists() {
+  fetch("data/dropdownlists.json")
+    .then(res => res.json())
+    .then(data => {
+      listData = data;
+      populateSelect("projectNameSelect", data.projectNames);
+      populateSelect("clientSelect", data.clients);
+      populateSelect("locationSelect", data.locations);
+      populateSelect("weatherSelect", data.weather);
+      populateSelect("clientProjectNumberSelect", data.clientProjectNumbers);
+      populateSelect("projectNumberSelect", data.projectNumbers);
+      document.querySelectorAll(".manpowerSelect").forEach(select => {
+        populateSelectElement(select, data.manpower);
+      });
+      
+      document.querySelectorAll(".classificationSelect").forEach(select => {
+        populateSelectElement(select, data.classification);
+      });
+      populateCostCodes(data.costCodes);
+      attachCostCodeListeners();
+    
+
+      // ✅ Add event listener AFTER populateSelect ensures element exists
+      document.getElementById("clientSelect").addEventListener("change", function () {
+        console.log("Selected client:", this.value);
+      });
+      
+    })
+    .catch(err => console.error("Failed to load dropdown lists", err));
+
+}
+
+function populateCostCodes(list) {
+  const sortedList = [...list].sort((a, b) => a.localeCompare(b));
+
+  for (let i = 1; i <= 6; i++) {
+    const select = document.getElementById(`costCode${i}`);
+    if (!select) continue;
+
+    select.innerHTML = '<option value="">Select...</option>';
+    sortedList.forEach(code => {
+      const option = document.createElement("option");
+      option.value = code;
+      option.textContent = code;
+      select.appendChild(option);
+    });
+  }
+}
+
+// Example mapping from cost codes to activities
+const activityMap = {
+"Dig 10441 - T&M - Clean-Up": "Specialty Seed",
+"Dig 10441 - T&M - Fire Suppression": "Fire Watch",
+"Dig 10441 - T&M - Matting": "All matting costs",
+"Dig 10441 - T&M - Other Indirect Cost": "Medical Support",
+"Dig 10441 - T&M - Site Prep": "Bridge install",
+"Dig 10441 - UPI - 2.1 FP Base": "FP Base",
+"Dig 10441 - UPI - 2.1 VP Base": "VP Base",
+"Dig 10441 - UPI - 2.2.10.1 Coating Hand Applied": "Coating Application (Epoxy) - Hand Applied",
+"Dig 10441 - UPI - 2.2.10.3 Coating Rock Shield": "Coating Application (Rock Shield)",
+"Dig 10441 - UPI - 2.2.4.3 Hand Dug Temperate": "Hand Dug Material Removed - Temperate",
+"Dig 10441 - UPI - 2.2.5.4 Fire Suppression": "Fire Suppression",
+"Dig 10441 - UPI - 2.2.6.2 Rock Excavation": "Rock Excavation",
+"Dig 10441 - UPI - 2.2.7.1 Blasting": "Typical Coating Removal & Blasting",
+"Dig 10441 - UPI - 2.2.8.1.1": "Site Support - Temperate",
+"Dig 11210 - T&M - Clean-Up": "Specialty Seed",
+"Dig 11210 - T&M - Fire Suppression": "Fire Watch",
+"Dig 11210 - T&M - Matting": "All matting costs",
+"Dig 11210 - T&M - Other Indirect Cost - Medical": "Medical Support",
+"Dig 11210 - T&M - Sweep Locates - Execution": "Sweeping, exclusively",
+"Dig 11210 - T&M - Traffic Mitigation": "Traffic Control",
+"Dig 11210 - UPI - 2.1 FP Base": "FP Base",
+"Dig 11210 - UPI - 2.1 VP Base": "VP Base",
+"Dig 11210 - UPI - 2.2.10.1 Coating Hand Applied": "Coating Application (Epoxy) - Hand Applied",
+"Dig 11210 - UPI - 2.2.10.3 Coating Rock Shield": "Coating Application (Rock Shield)",
+"Dig 11210 - UPI - 2.2.4.3 Hand Dug Temperate": "Hand Dug Material Removed - Temperate",
+"Dig 11210 - UPI - 2.2.5.4 Fire Suppression": "Fire Suppression",
+"Dig 11210 - UPI - 2.2.7.1 Blasting": "Typical Coating Removal & Blasting",
+"Dig 11210 - UPI - 2.2.8.1.1 Site Support": "Site Support - Temperate",
+"Dig 11211 - T&M - Clean-Up": "Specialty Seed",
+"Dig 11211 - T&M - Fire Suppression": "Fire Watch",
+"Dig 11211 - T&M - Other Indirect Cost - Medical": "Medical Support",
+"Dig 11211 - T&M - Site Prep": "Bridge Install",
+"Dig 11211 - T&M - Sweep Locates - Execution": "Sweeping, exclusively",
+"Dig 11211 - UPI - 2.1 VP Base": "VP Base",
+"Dig 11211 - UPI - 2.1 FP Base": "FP Base",
+"Dig 11211 - UPI - 2.2.10.1 Coating Hand Applied": "Coating Application (Epoxy) - Hand Applied",
+"Dig 11211 - UPI - 2.2.10.3 Coating Rock Shield": "Coating Application (Rock Shield)",
+"Dig 11211 - UPI - 2.2.4.3 Hand Dug Temperate": "Hand Dug Material Removed - Temperate",
+"Dig 11211 - UPI - 2.2.5.4 Fire Suppression": "Fire Suppression",
+"Dig 11211 - UPI - 2.2.7.1 Blasting": "Typical Coating Removal & Blasting",
+"Dig 11211 - UPI - 2.2.8.1.1 Site Suppport ": "Site Support - Temperate",
+"Dig 11212 - T&M - Clean-Up": "Specialty Seed",
+"Dig 11212 - T&M - Fire Suppression": "Fire Watch",
+"Dig 11212 - T&M - Matting": "All matting costs",
+"Dig 11212 - T&M - Other Indirect Cost - Medical": "Medical Support",
+"Dig 11212 - T&M - Sweep Locates - Execution": "Sweeping, exclusively",
+"Dig 11212 - T&M - Traffic Mitigation": "Traffic Control",
+"Dig 11212 - UPI - 2.1 FP Base": "FP Base",
+"Dig 11212 - UPI - 2.1 VP Base": "VP Base",
+"Dig 11212 - UPI - 2.2.10.1 Coating - Hand Applied": "Coating Application (Epoxy) - Hand Applied",
+"Dig 11212 - UPI - 2.2.10.3 Coating Rock Shield": "Coating Application (Rock Shield)",
+"Dig 11212 - UPI - 2.2.4.3 Hand Dug Temperate": "Hand Dug Material Removed - Temperate",
+"Dig 11212 - UPI - 2.2.5.4 Fire Suppression": "Fire Suppression",
+"Dig 11212 - UPI - 2.2.7.1 Blasting": "Typical Coating Removal & Blasting",
+"Dig 11212 - UPI - 2.2.8.1.1 Site Support": "Site Support - Temperate",
+"Dig 11213 - T&M - Clean-Up": "Specialty Seed",
+"Dig 11213 - T&M - Fire Suppression": "Fire Watch",
+"Dig 11213 - T&M - Indigenous Engagement": "Indigenous Monitor",
+"Dig 11213 - T&M - Matting": "All matting costs",
+"Dig 11213 - T&M - Other Indirect Cost - Brush": "DTA/Falling/Brush Removal",
+"Dig 11213 - T&M - Other Indirect Cost - Medical ": "Medical Support",
+"Dig 11213 - T&M - Sweep Locates - Exclusive": "Sweeping, exclusively",
+"Dig 11213 - T&M - Traffic Mitigation": "Traffic Control",
+"Dig 11213 - T&M - Wellpoint/Sandpoint Dewatering": "Nightshift Pumpwatch",
+"Dig 11213 - UPI - 2.1 FP Base": "FP Base",
+"Dig 11213 - UPI - 2.1 VP Base": "VP Base",
+"Dig 11213 - UPI - 2.2.10.1 Coating - Hand Applied": "Coating Application (Epoxy) - Hand Applied",
+"Dig 11213 - UPI - 2.2.10.3 Coating Rock Shield": "Coating Application (Rock Shield)",
+"Dig 11213 - UPI - 2.2.4.3 Hand Dug Temperate": "Hand Dug Material Removed - Temperate",
+"Dig 11213 - UPI - 2.2.5.1 Additional Water Management": "Additional Water Management",
+"Dig 11213 - UPI - 2.2.5.4 Fire Suppression": "Fire Suppression",
+"Dig 11213 - UPI - 2.2.7.1 Blasting": "Typical Coating Removal & Blasting",
+"Dig 11213 - UPI - 2.2.8.1.1 - Site Support": "Site Support - Temperate",
+"Dig 11214 - T&M - Clean-Up": "Specialty Seed",
+"Dig 11214 - T&M - Fire Suppression": "Fire Watch",
+"Dig 11214 - T&M - Matting": "All matting costs",
+"Dig 11214 - T&M - Other Indirect Cost - Brush": "DTA/Falling/Brush Removal",
+"Dig 11214 - T&M - Other Indirect Cost - Medical": "Medical Support",
+"Dig 11214 - T&M - Sweep Locates - Execution": "Sweeping, exclusively",
+"Dig 11214 - T&M - Traffic Mitigation": "Traffic Control",
+"Dig 11214 - UPI - 2.1 FP Base": "FP Base",
+"Dig 11214 - UPI - 2.1 VP Base": "VP Base",
+"Dig 11214 - UPI - 2.2.10.1 Coating - Hand Applied": "Coating Application (Epoxy) - Hand Applied",
+"Dig 11214 - UPI - 2.2.10.3 Coating Rock Shield": "Coating Application (Rock Shield)",
+"Dig 11214 - UPI - 2.2.4.3 Hand Dug Temperate": "Hand Dug Material Removed - Temperate",
+"Dig 11214 - UPI - 2.2.5.4 Fire Suppression": "Fire Suppression",
+"Dig 11214 - UPI - 2.2.6.1 Additional Soil Handling": "Additional Soil Handling",
+"Dig 11214 - UPI - 2.2.6.2 Rock Excavation": "Rock Excavation",
+"Dig 11214 - UPI - 2.2.6.3 Shoring box assembly": "Shoring Box - Assembly",
+"Dig 11214 - UPI - 2.2.6.4 Shoring box install / removal": "Shoring - Trench Box Installation and Removal",
+"Dig 11214 - UPI - 2.2.6.5 Shoring box usage": "Shoring - Trench Box Usage",
+"Dig 11214 - UPI - 2.2.6.7 Rock (After 10m cubed)": "Rock Excavation (After 10m cubed)",
+"Dig 11214 - UPI - 2.2.7.1 Blasting": "Typical Coating Removal & Blasting",
+"Dig 11214 - UPI - 2.2.8.1.1 Site Support": "Site Support - Temperate",
+"Dig 11215 - T&M - Clean-Up": "Specialty Seed",
+"Dig 11215 - T&M - Fire Suppression": "Fire Watch",
+"Dig 11215 - T&M - Matting": "All matting costs",
+"Dig 11215 - T&M - Other Indirect Cost - Medical": "Medical Support",
+"Dig 11215 - T&M - Sweep Locates - Execution": "Sweeping, exclusively",
+"Dig 11215 - UPI - 2.1 FP Base": "FP Base",
+"Dig 11215 - UPI - 2.1 VP Base": "VP Base",
+"Dig 11215 - UPI - 2.2.10.1 Coating - Hand Applied": "Coating Application (Epoxy) - Hand Applied",
+"Dig 11215 - UPI - 2.2.10.3 Coating Rock Shield": "Coating Application (Rock Shield)",
+"Dig 11215 - UPI - 2.2.4.3 Hand Dug Temperate": "Hand Dug Material Removed - Temperate",
+"Dig 11215 - UPI - 2.2.5.4 Fire Suppression": "Fire Suppression",
+"Dig 11215 - UPI - 2.2.6.2 Rock Excavation": "Rock Excavation",
+"Dig 11215 - UPI - 2.2.7.1 Blasting": "Typical Coating Removal & Blasting",
+"Dig 11215 - UPI - 2.2.8.1.1 Site Support": "Site Support - Temperate",
+"Dig 11256 - T&M - Clean-Up": "Specialty Seed",
+"Dig 11256 - T&M - Fire Suppression": "Fire Watch",
+"Dig 11256 - T&M - Matting": "All matting costs",
+"Dig 11256 - T&M - Other Indirect Cost": "Medical Support",
+"Dig 11256 - T&M - Traffic Mitigation": "Traffic Control",
+"Dig 11256 - UPI - 2.1 FP": "FP Base",
+"Dig 11256 - UPI - 2.1 VP": "VP Base",
+"Dig 11256 - UPI - 2.2.10.1": "Coating Application (Epoxy) - Hand Applied",
+"Dig 11256 - UPI - 2.2.10.3": "Coating Application (Rock Shield)",
+"Dig 11256 - UPI - 2.2.3.1": "Third Party Sweeps",
+"Dig 11256 - UPI - 2.2.4.3": "Hand Dug Material Removed - Temperate",
+"Dig 11256 - UPI - 2.2.5.4": "Fire Suppression",
+"Dig 11256 - UPI - 2.2.6.2": "Rock Excavation",
+"Dig 11256 - UPI - 2.2.7.1": "Typical Coating Removal & Blasting",
+"Dig 11256 - UPI - 2.2.8.1.1": "Site Support - Temperate",
+"Dig 11257 - T&M - Clean-Up": "Specialty Seed",
+"Dig 11257 - T&M - Fire Suppression": "Fire Watch",
+"Dig 11257 - T&M - Matting": "All matting costs",
+"Dig 11257 - T&M - Other Indirect Cost": "Medical Support",
+"Dig 11257 - T&M - Road & Access Construction": "Road & Access Construction",
+"Dig 11257 - T&M - Sweep Locates - Execution": "Sweeping, exclusively",
+"Dig 11257 - T&M - Traffic Mitigation": "Traffic Control",
+"Dig 11257 - UPI - 2.1 FP": "FP Base",
+"Dig 11257 - UPI - 2.1 VP": "VP Base",
+"Dig 11257 - UPI - 2.2.10.1": "Coating Application (Epoxy) - Hand Applied",
+"Dig 11257 - UPI - 2.2.10.3": "Coating Application (Rock Shield)",
+"Dig 11257 - UPI - 2.2.4.3": "Hand Dug Material Removed - Temperate",
+"Dig 11257 - UPI - 2.2.5.4": "Fire Suppression",
+"Dig 11257 - UPI - 2.2.6.3": "Shoring Box - Assembly",
+"Dig 11257 - UPI - 2.2.6.4": "Shoring - Trench Box Installation and Removal",
+"Dig 11257 - UPI - 2.2.6.5": "Shoring - Trench Box Usage",
+"Dig 11257 - UPI - 2.2.7.1": "Typical Coating Removal & Blasting",
+"Dig 11257 - UPI - 2.2.8.1.1": "Site Support - Temperate",
+"Dig 11258 - T&M - Clean-Up": "Specialty Seed",
+"Dig 11258 - T&M - Fire Suppression": "Fire Watch",
+"Dig 11258 - T&M - Matting": "All matting costs",
+"Dig 11258 - T&M - Other Indirect Cost": "Medical Support",
+"Dig 11258 - T&M - Other Indirect Cost": "DTA/Falling/Brush Removal",
+"Dig 11258 - UPI - 2.1 FP": "FP Base",
+"Dig 11258 - UPI - 2.1 VP": "VP Base",
+"Dig 11258 - UPI - 2.2.10.1": "Coating Application (Epoxy) - Hand Applied",
+"Dig 11258 - UPI - 2.2.10.3": "Coating Application (Rock Shield)",
+"Dig 11258 - UPI - 2.2.3.1": "Third Party Sweeps",
+"Dig 11258 - UPI - 2.2.5.4": "Fire Suppression",
+"Dig 11258 - UPI - 2.2.6.1": "Additional Soil Handling",
+"Dig 11258 - UPI - 2.2.7.1": "Typical Coating Removal & Blasting",
+"Dig 11258 - UPI - 2.2.8.1.1": "Site Support - Temperate",
+"Dig 11258 - UPI - 22.4.3": "Hand Dug Material Removed - Temperate",
+"Dig 11259 - T&M - Clean-Up": "Specialty Seed",
+"Dig 11259 - T&M - Fire Suppression": "Fire Watch",
+"Dig 11259 - T&M - Matting": "All matting costs",
+"Dig 11259 - T&M - Other Indirect Cost": "Medical Support",
+"Dig 11259 - UPI - 2.1 FP": "FP Base",
+"Dig 11259 - UPI - 2.1 VP": "VP Base",
+"Dig 11259 - UPI - 2.2.10.1": "Coating Application (Epoxy) - Hand Applied",
+"Dig 11259 - UPI - 2.2.10.3": "Coating Application (Rock Shield)",
+"Dig 11259 - UPI - 2.2.3.1": "Third Party Sweeps",
+"Dig 11259 - UPI - 2.2.4.3": "Hand Dug Material Removed - Temperate",
+"Dig 11259 - UPI - 2.2.5.4": "Fire Suppression",
+"Dig 11259 - UPI - 2.2.6.2": "Rock Excavation",
+"Dig 11259 - UPI - 2.2.7.1": "Typical Coating Removal & Blasting",
+"Dig 11259 - UPI - 2.2.8.1.1": "Site Support - Temperate",
+"Dig 5938 - T&M - Clean-Up": "Specialty Seed",
+"Dig 5938 - T&M - Fire Suppression": "Fire Watch",
+"Dig 5938 - T&M - Indigenous Engagement": "Indigenous Monitor",
+"Dig 5938 - T&M - Matting": "All matting costs",
+"Dig 5938 - T&M - Other Indirect Cost": "Medical Support",
+"Dig 5938 - T&M - Site Prep": "Bridge Install",
+"Dig 5938 - T&M - Sweep Locates - Execution": "Sweeping, exclusively",
+"Dig 5938 - T&M - Traffic Mitigation": "Traffic Control",
+"Dig 5938 - UPI - 2.1 FP": "FP Base",
+"Dig 5938 - UPI - 2.1 VP": "VP Base",
+"Dig 5938 - UPI - 2.2.10.1": "Coating Application (Epoxy) - Hand Applied",
+"Dig 5938 - UPI - 2.2.10.3": "Coating Application (Rock Shield)",
+"Dig 5938 - UPI - 2.2.4.3": "Hand Dug Material Removed - Temperate",
+"Dig 5938 - UPI - 2.2.5.4": "Fire Suppression",
+"Dig 5938 - UPI - 2.2.6.2": "Rock Excavation",
+"Dig 5938 - UPI - 2.2.6.3": "Shoring - Trench Box Assembly",
+"Dig 5938 - UPI - 2.2.6.4": "Shoring - Trench Box Installation and Removal",
+"Dig 5938 - UPI - 2.2.6.5": "Shoring - Trench Box Usage",
+"Dig 5938 - UPI - 2.2.7.1": "Typical Coating Removal & Blasting",
+"Dig 5938 - UPI - 2.2.8.1.1": "Site Support - Temperate",
+"Dig 5940 - UPI - 2.1 FP Base": "FP Base",
+"Dig 5940 - UPI - 2.1 VP Base": "VP Base",
+"Dig 5940 - UPI - 2.2.10.1 Coating - Hand Applied": "Coating Application (Epoxy) - Hand Applied",
+"Dig 5940 - UPI - 2.2.10.3 Coating Rock Shield": "Coating Application (Rock Shield)",
+"Dig 5940 - UPI - 2.2.4.3 Hand Dug Temperate": "Hand Dug Material Removed - Temperate",
+"Dig 5940 - UPI - 2.2.5.4 Fire Suppression": "Fire Suppression",
+"Dig 5940 - UPI - 2.2.6.3 Shoring box assembly": "Shoring - Trench Box Assembly",
+"Dig 5940 - UPI - 2.2.6.4 Shoring box install / removal": "Shoring - Trench Box Installation and Removal",
+"Dig 5940 - UPI - 2.2.6.5 Shoring box usage ": "Shoring - Trench Box Usage",
+"Dig 5940 - UPI - 2.2.7.1 Blasting": "Typical Coating Removal & Blasting",
+"Dig 5940 - UPI - 22.8.1.1 Site Support": "Site Support - Temperate",
+"Dig 5940 - T&M - Clean-Up": "Specialty Seed",
+"Dig 5940 - T&M- Fire Suppression": "Fire Watch",
+"Dig 5940 - T&M - Indigenous Engagement": "Indigenous Monitor",
+"Dig 5940 - T&M - Other Indirect Cost - Brush": "DTA/Falling/Brush Removal",
+"Dig 5940 - T&M - Other Indirect Cost - Medic": "Medical Support",
+"Dig 5940 - T&M - Sweep Locates - Execution": "Sweeping, exclusively",
+"Dig 6017 - T&M - Clean-Up": "Specialty Seed",
+"Dig 6017 - T&M - Fire Suppression": "Fire Watch",
+"Dig 6017 - T&M - Matting": "All matting costs",
+"Dig 6017 - T&M - Other Indirect Cost": "Medical Support",
+"Dig 6017 - T&M - Other Indirect Cost": "DTA/Falling/Brush Removal",
+"Dig 6017 - T&M - Sweep Locates - Execution": "Sweeping, exclusively",
+"Dig 6017 - T&M - Wellpoint/Sandpoint Dewatering": "Nightshift Pumpwatch",
+"Dig 6017 - UPI - 2.1 FP": "FP Base",
+"Dig 6017 - UPI - 2.1 VP": "VP Base",
+"Dig 6017 - UPI - 2.2.10.1": "Coating Application (Epoxy) - Hand Applied",
+"Dig 6017 - UPI - 2.2.10.3": "Coating Application (Rock Shield)",
+"Dig 6017 - UPI - 2.2.4.3": "Hand Dug Material Removed - Temperate",
+"Dig 6017 - UPI - 2.2.5.1": "Additional Water Management",
+"Dig 6017 - UPI - 2.2.5.4": "Fire Suppression",
+"Dig 6017 - UPI - 2.2.6.3": "Shoring - Trench Box Assembly",
+"Dig 6017 - UPI - 2.2.6.4": "Shoring - Trench Box Installation and Removal",
+"Dig 6017 - UPI - 2.2.6.5": "Shoring - Trench Box Usage",
+"Dig 6017 - UPI - 2.2.7.1": "Typical Coating Removal & Blasting",
+"Dig 6017 - UPI - 2.2.8.1.1": "Site Support - Temperate",
+"Dig 6501 - T&M - Clean-Up": "Specialty Seed",
+"Dig 6501 - T&M - Fire Suppression": "Fire Watch",
+"Dig 6501 - T&M - Matting": "All matting costs",
+"Dig 6501 - T&M - Other Indirect Cost": "Medical Support",
+"Dig 6501 - T&M - Sweep Locates - Execution": "Sweeping, exclusively",
+"Dig 6501 - T&M - Wellpoint/Sandpoint Dewatering": "Nightshift Pumpwatch",
+"Dig 6501 - UPI - 2.1 FP": "FP Base",
+"Dig 6501 - UPI - 2.1 VP": "VP Base",
+"Dig 6501 - UPI - 2.2.10.1": "Coating Application (Epoxy) - Hand Applied",
+"Dig 6501 - UPI - 2.2.10.3": "Coating Application (Rock Shield)",
+"Dig 6501 - UPI - 2.2.4.3": "Hand Dug Material Removed - Temperate",
+"Dig 6501 - UPI - 2.2.5.1": "Additional Water Management",
+"Dig 6501 - UPI - 2.2.5.4": "Fire Suppression",
+"Dig 6501 - UPI - 2.2.6.3": "Shoring - Trench Box Assembly",
+"Dig 6501 - UPI - 2.2.6.4": "Shoring - Trench Box Installation and Removal",
+"Dig 6501 - UPI - 2.2.6.5": "Shoring - Trench Box Usage",
+"Dig 6501 - UPI - 2.2.7.1": "Typical Coating Removal & Blasting",
+"Dig 6501 - UPI - 2.2.8.1.1": "Site Support - Temperate",
+"Dig 6502 - T&M - Clean-Up": "Specialty Seed",
+"Dig 6502 - T&M - Fire Suppression": "Fire Watch",
+"Dig 6502 - T&M - Indigenous Engagement": "Indigenous Monitor",
+"Dig 6502 - T&M - Matting": "All matting costs",
+"Dig 6502 - T&M - Other Indirect Cost": "Medical Support",
+"Dig 6502 - T&M - Site Prep": "Bridge Install",
+"Dig 6502 - T&M - Sweep Locates - Execution": "Sweeping, exclusively",
+"Dig 6502 - T&M - Wellpoint/Sandpoint Dewatering": "Nightshift Pumpwatch",
+"Dig 6502 - UPI - 2.1 FP": "FP Base",
+"Dig 6502 - UPI - 2.1 VP": "VP Base",
+"Dig 6502 - UPI - 2.2.10.1": "Coating Application (Epoxy) - Hand Applied",
+"Dig 6502 - UPI - 2.2.10.3": "Coating Application (Rock Shield)",
+"Dig 6502 - UPI - 2.2.4.3": "Hand Dug Material Removed - Temperate",
+"Dig 6502 - UPI - 2.2.5.1": "Additional Water Management",
+"Dig 6502 - UPI - 2.2.5.4": "Fire Suppression",
+"Dig 6502 - UPI - 2.2.6.2": "Rock Excavation",
+"Dig 6502 - UPI - 2.2.6.3": "Shoring - Trench Box Assembly",
+"Dig 6502 - UPI - 2.2.6.4": "Shoring - Trench Box Installation and Removal",
+"Dig 6502 - UPI - 2.2.6.5": "Shoring - Trench Box Usage",
+"Dig 6502 - UPI - 2.2.7.1": "Typical Coating Removal & Blasting",
+"Dig 6502 - UPI - 2.2.8.1.1": "Site Support - Temperate",
+"Dig 6503 - T&M - Clean-Up": "Specialty Seed",
+"Dig 6503 - T&M - Excavation": "Engineered Excavation Plan",
+"Dig 6503 - T&M - Fire Suppression": "Fire Watch",
+"Dig 6503 - T&M - Other Indirect Cost": "Medical Support",
+"Dig 6503 - T&M - Other Indirect Cost": "DTA/Falling/Brush Removal",
+"Dig 6503 - T&M - Sweep Locates - Execution": "Sweeping, exclusively",
+"Dig 6503 - UPI - 2.1 FP": "FP Base",
+"Dig 6503 - UPI - 2.1 VP": "VP Base",
+"Dig 6503 - UPI - 2.2.10.1": "Coating Application (Epoxy) - Hand Applied",
+"Dig 6503 - UPI - 2.2.10.3": "Coating Application (Rock Shield)",
+"Dig 6503 - UPI - 2.2.4.3": "Hand Dug Material Removed - Temperate",
+"Dig 6503 - UPI - 2.2.5.4": "Fire Suppression",
+"Dig 6503 - UPI - 2.2.6.2": "Rock Excavation",
+"Dig 6503 - UPI - 2.2.6.3": "Shoring - Trench Box Assembly",
+"Dig 6503 - UPI - 2.2.6.4": "Shoring - Trench Box Installation and Removal",
+"Dig 6503 - UPI - 2.2.6.5": "Shoring Box - Usage",
+"Dig 6503 - UPI - 2.2.6.7": "Rock Excavation (After 10m cubed)",
+"Dig 6503 - UPI - 2.2.7.1": "Typical Coating Removal & Blasting",
+"Dig 6503 - UPI - 2.2.8.1.1": "Site Support - Temperate",
+"Dig 7003 - T&M - Clean-Up": "Specialty Seed",
+"Dig 7003 - T&M - Dozer Support": "Dozer Support",
+"Dig 7003 - T&M - Fire Suppression": "Fire Watch",
+"Dig 7003 - T&M - Indigenous Engagement": "Indigenous Monitor",
+"Dig 7003 - T&M - Matting": "All matting costs",
+"Dig 7003 - T&M - Other Indirect Cost": "DTA/Falling/Brush Removal",
+"Dig 7003 - T&M - Other Indirect Cost": "Medical Support",
+"Dig 7003 - T&M - Site Prep": "Bridge Install",
+"Dig 7003 - UPI - 2.1 FP": "FP Base",
+"Dig 7003 - UPI - 2.1 VP": "VP Base",
+"Dig 7003 - UPI - 2.2.10.1": "Coating Application (Epoxy) - Hand Applied",
+"Dig 7003 - UPI - 2.2.10.3": "Coating Application (Rock Shield)",
+"Dig 7003 - UPI - 2.2.3.1": "Third Party Sweeps",
+"Dig 7003 - UPI - 2.2.4.3": "Hand Dug Material Removed - Temperate",
+"Dig 7003 - UPI - 2.2.5.1": "Additional Water Management",
+"Dig 7003 - UPI - 2.2.5.4": "Fire Suppression",
+"Dig 7003 - UPI - 2.2.6.2": "Rock Excavation",
+"Dig 7003 - UPI - 2.2.7.1": "Typical Coating Removal & Blasting",
+"Dig 7003 - UPI - 2.2.8.1.1": "Site Support - Temperate",
+"Dig 7005 - T&M - Clean-Up": "Specialty Seed",
+"Dig 7005 - T&M - Fire Suppression": "Fire Watch",
+"Dig 7005 - T&M - Matting": "All matting costs",
+"Dig 7005 - T&M - Other Indirect Cost": "Medical Support",
+"Dig 7005 - T&M - Other Indirect Cost": "DTA/Falling/Brush Removal",
+"Dig 7005 - T&M - Traffic Mitigation": "Traffic Control",
+"Dig 7005 - UPI - 2.1 FP": "FP Base",
+"Dig 7005 - UPI - 2.1 VP": "VP Base",
+"Dig 7005 - UPI - 2.2.10.1": "Coating Application (Epoxy) - Hand Applied",
+"Dig 7005 - UPI - 2.2.10.3": "Coating Application (Rock Shield)",
+"Dig 7005 - UPI - 2.2.3.1": "Third Party Sweeps",
+"Dig 7005 - UPI - 2.2.4.3": "Hand Dug Material Removed - Temperate",
+"Dig 7005 - UPI - 2.2.5.4": "Fire Suppression",
+"Dig 7005 - UPI - 2.2.6.2": "Rock Excavation",
+"Dig 7005 - UPI - 2.2.7.1": "Typical Coating Removal & Blasting",
+"Dig 7005 - UPI - 2.2.8.1.1": "Site Support - Temperate",
+"Dig 7007 - UPI - 2.1 FP": "FP Base",
+"Dig 7007 - UPI - 2.1 VP": "VP Base",
+"Dig 7007 - UPI - 2.2.10.1": "Coating Application (Epoxy) - Hand Applied",
+"Dig 7007 - UPI - 2.2.10.3": "Coating Application (Rock Shield)",
+"Dig 7007 - UPI - 2.2.3.1": "Third Party Sweeps",
+"Dig 7007 - UPI - 2.2.4.3": "Hand Dug Material Removed - Temperate",
+"Dig 7007 - UPI - 2.2.5.4": "Fire Suppression",
+"Dig 7007 - UPI - 2.2.6.2": "Rock Excavation",
+"Dig 7007 - UPI - 2.2.7.1": "Typical Coating Removal & Blasting",
+"Dig 7007 - UPI - 2.2.8.1.1": "Site Support - Temperate",
+"Dig 7007 -T&M - Clean-Up": "Specialty Seed",
+"Dig 7007 -T&M - Fire Suppression": "Fire Watch",
+"Dig 7007 -T&M - Matting": "All matting costs",
+"Dig 7007 -T&M - Other Indirect Cost": "Medical Support",
+"Dig 7009 - T&M - Clean-Up": "Specialty Seed",
+"Dig 7009 - T&M - Fire Suppression": "Fire Watch",
+"Dig 7009 - T&M - Other Indirect Cost": "Medical Support",
+"Dig 7009 - UPI - 2.1 FP": "FP Base",
+"Dig 7009 - UPI - 2.1 VP": "VP Base",
+"Dig 7009 - UPI - 2.2.10.1": "Coating Application (Epoxy) - Hand Applied",
+"Dig 7009 - UPI - 2.2.10.3": "Coating Application (Rock Shield)",
+"Dig 7009 - UPI - 2.2.3.1": "Third Party Sweeps",
+"Dig 7009 - UPI - 2.2.4.3": "Hand Dug Material Removed - Temperate",
+"Dig 7009 - UPI - 2.2.5.4": "Fire Suppression",
+"Dig 7009 - UPI - 2.2.6.1": "Additional Soil Handling",
+"Dig 7009 - UPI - 2.2.6.2": "Rock Excavation",
+"Dig 7009 - UPI - 2.2.7.1": "Typical Coating Removal & Blasting",
+"Dig 7009 - UPI - 2.2.8.1.1": "Site Support - Temperate",
+"Dig 7010 - T&M - Clean-Up": "Specialty Seed",
+"Dig 7010 - T&M - Fire Suppression": "Fire Watch",
+"Dig 7010 - T&M - Other Indirect Cost": "Medical Support",
+"Dig 7010 - UPI - 2.1 FP": "FP Base",
+"Dig 7010 - UPI - 2.1 VP": "VP Base",
+"Dig 7010 - UPI - 2.2.10.1": "Coating Application (Epoxy) - Hand Applied",
+"Dig 7010 - UPI - 2.2.10.3": "Coating Application (Rock Shield)",
+"Dig 7010 - UPI - 2.2.3.1": "Third Party Sweeps",
+"Dig 7010 - UPI - 2.2.4.3": "Hand Dug Material Removed - Temperate",
+"Dig 7010 - UPI - 2.2.5.4": "Fire Suppression",
+"Dig 7010 - UPI - 2.2.6.2": "Rock Excavation",
+"Dig 7010 - UPI - 2.2.7.1": "Typical Coating Removal & Blasting",
+"Dig 7010 - UPI - 2.2.8.1.1": "Site Support - Temperate",
+"Pending CR": "Pending CR",
+"All Digs - Abrasives": "Sandblast Media",
+"All Digs - Coating": "Coating Materials",
+"All Digs - Rock Guard": "Rock Guard",
+"All - Small Tools & Consumables": "Small Tools & Consumables",
+"All Digs - Pre Planning": "Pre Planning",
+"All Digs - Composite Repair": "Composite Repair",
+
+  // Add as many as you want
+};
+
+function attachCostCodeListeners() {
+  for (let i = 1; i <= 6; i++) {
+    const costCodeSelect = document.getElementById(`costCode${i}`);
+    const activityField = document.getElementById(`activity${i}`);
+
+    if (costCodeSelect && activityField) {
+      costCodeSelect.addEventListener("change", () => {
+        const code = costCodeSelect.value;
+        activityField.value = activityMap[code] || "";
+      });
+    }
+  }
+}
+
+function populateSelectElement(select, list) {
+  if (!select || !list) return;
+  list.forEach(item => {
+    const option = document.createElement("option");
+    option.textContent = item;
+    option.value = item;
+    select.appendChild(option);
+  });
+}
+
+function populateSelect(id, values) {
+  const select = document.getElementById(id);
+  if (!select || !Array.isArray(values)) {
+    console.warn(`Dropdown skipped: ${id}`, values);
+    return;
+  }
+    
+  
+    // Sort alphabetically
+    const sortedValues = [...values].sort((a, b) => a.localeCompare(b));
+  
+    select.innerHTML = '<option value="">Select...</option>';
+    sortedValues.forEach(val => {
+      const option = document.createElement("option");
+      option.value = val;
+      option.textContent = val;
+      select.appendChild(option);
+    });
+  }
+  
+    document.addEventListener("mouseout", function (e) {
+      if (e.target.classList.contains("option")) {
+        e.target.style.backgroundColor = "#ffffff";
+        e.target.style.color = "#000000";
+      }
+    });
+
+    // add manpower totals and then update grand total
+    document.querySelectorAll('tr').forEach(row => {
+      const hourInputs = row.querySelectorAll('.hour-cell input');
+      const totalField = row.querySelector('.total-field');
+    
+      if (hourInputs.length && totalField) {
+        hourInputs.forEach(input => {
+          input.addEventListener('input', () => {
+            let sum = 0;
+            hourInputs.forEach(i => {
+              const val = parseFloat(i.value);
+              if (!isNaN(val)) sum += val;
+            });
+            totalField.value = sum.toFixed(1);
+    
+            updateGrandTotalHours(); // ✅ Add this here
+          });
+    
+          input.addEventListener('blur', () => {
+            const val = parseFloat(input.value);
+            if (!isNaN(val)) {
+              input.value = val.toFixed(1);
+            }
+          });
+        });
+      }
+    });
+    
+
+    //Grand total of manpower
+    function updateGrandTotalHours() {
+      const totalInputs = document.querySelectorAll(".total-field");
+      let sum = 0;
+      totalInputs.forEach(input => {
+        const val = parseFloat(input.value);
+        if (!isNaN(val)) sum += val;
+      });
+      const output = document.getElementById("grandTotalHours");
+      if (output) output.value = sum.toFixed(1);
+    }
+    
+    
+    
+  
+
+window.addEventListener("DOMContentLoaded", loadLists);

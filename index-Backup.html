@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Field Report</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="header-bar">
+        <img src="assets/images/OMH Logo.png" alt="OMH Logo" class="logo" />
+        <h1 class="title">DAILY FIELD REPORT</h1>
+      </div>
+      
+    <div class="canvas">
+      <table class="header-table">
+
+  <!--ROW 1-->
+        <tr>
+          <th>Date:</th>
+          <td><input type="date" /></td>
+          <th>Project Name:</th>
+            <td>
+            <input list="projectNameList" name="projectName" />
+            <datalist id="projectNameList"></datalist>
+            </td>
+          <th>Report #:</th>
+          <td><input type="text" /></td>
+        </tr>
+
+<!--ROW 2-->
+        <tr>
+          <th>Client:</th>
+          <td>
+            <input list="clientList" name="client" />
+            <datalist id="clientList"></datalist>
+          </td>
+          <th>Project Location:</th>
+        <td>
+        <input list="locationList" name="projectLocation" />
+        <datalist id="locationList"></datalist>
+        </td>
+        <th>Weather:</th>
+        <td>
+        <input list="weatherList" name="weather" />
+        <datalist id="weatherList"></datalist>
+        </td>
+        </tr>
+
+<!--ROW 3-->
+        <tr>
+            <th>Client Project Number:</th>
+            <td>
+              <input list="clientProjectNumberList" name="clientProjectNumber" />
+              <datalist id="clientProjectNumberList"></datalist>
+            </td>
+            <th>Project Number:</th>
+            <td>
+              <input list="projectNumberList" name="projectNumber" />
+              <datalist id="projectNumberList"></datalist>
+            </td>
+          <th>Temperature:</th>
+          <td><input type="text" /></td>
+        </tr>
+        <tr>
+          <th>Client Inspection:</th>
+          <td><input type="text" /></td>
+          <th>OMH Supervisor:</th>
+          <td><input type="text" /></td>
+          <th>Site Conditions:</th>
+          <td><input type="text" /></td>
+        </tr>
+        </table>
+
+<!--New TABLE-->
+     
+<table class="costcode-table">
+    <tr style="height: 80px;">
+        <td style="background-color: #edf1dc; text-align: right;"><strong>Cost Code:</strong></td>
+        <td style="background-color: #dbe5f1;"> <select style="height: 60px;"></select></td>
+        <td style="background-color: #dbe5f1;"> <select style="height: 60px;"></select></td>
+        <td style="background-color: #dbe5f1;"> <select style="height: 60px;"></select></td>
+        <td style="background-color: #dbe5f1;"> <select style="height: 60px;"></select></td>
+        <td style="background-color: #dbe5f1;"> <select style="height: 60px;"></select></td>
+        <td colspan="4" style="background-color: #edf1dc; text-align: center;"><strong>Notes</strong></td>
+      </tr>
+      
+    <tr style="height: 80px;">
+        <td style="background-color: #edf1dc; text-align: right;"><strong>Activity:</strong></td>
+        <td style="background-color: #dbe5f1;"> <select style="height: 60px;"></select></td>
+        <td style="background-color: #dbe5f1;"> <select style="height: 60px;"></select></td>
+        <td style="background-color: #dbe5f1;"> <select style="height: 60px;"></select></td>
+        <td style="background-color: #dbe5f1;"> <select style="height: 60px;"></select></td>
+        <td style="background-color: #dbe5f1;"> <select style="height: 60px;"></select></td>
+        <td colspan="4" style="background-color: #edf1dc; text-align: center;"><strong></strong></td>
+    </tr>
+ </table>
+
+<!-- Manpower Table -->
+<table style="width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 14px;">
+    <colgroup>
+      <col style="width: 48px;">   <!-- Manpower -->
+      <col style="width: 43px;">   <!-- Classification -->
+      <col style="width: 13px;">   <!-- Total -->
+      <col style="width: 10px;">   <!-- LOA -->
+      <col style="width: 67.8px;"> <!-- Activity 1 -->
+      <col style="width: 66px;">   <!-- Activity 2 -->
+      <col style="width: 67.8px;"> <!-- Activity 3 -->
+      <col style="width: 67.8px;"> <!-- Activity 4 -->
+      <col style="width: 67.8px;"> <!-- Activity 5 -->
+      <col style="width: 70px;"> <!-- Activity 6 -->
+    </colgroup>
+  
+    <!-- Header Row -->
+    <tr style="background-color: #edf1dc; text-align: center;">
+      <th>Manpower:</th>
+      <th>Classification:</th>
+      <th>Total:</th>
+      <th>LOA</th>
+      <th colspan="6"></th> <!-- Activity area -->
+    </tr>
+  
+    <!-- Input Row -->
+    <tr>
+      <td><select style="width: 100%;"></select></td>
+      <td><select style="width: 100%;"></select></td>
+      <td>
+        <input
+          type="number"
+          value="0.00"
+          step="0.01"
+          readonly
+          style="width: 100%; text-align: right; background-color: #f4f4f4; border: 1px solid #ccc;"
+        />
+      </td>
+      <td style="text-align: center;">
+        <input type="checkbox" />
+      </td>
+      <td style="background-color: #e7edf7;"></td>
+      <td style="background-color: #e7edf7;"></td>
+      <td style="background-color: #e7edf7;"></td>
+      <td style="background-color: #e7edf7;"></td>
+      <td style="background-color: #e7edf7;"></td>
+      <td style="background-color: #e7edf7;"></td>
+    </tr>
+  </table>
+  
+  
+  
+  
+  
+  
+
+  
+  
+
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
+  

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Field Report</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#1e3a5f" />
+
+</head>
+
+<body>
+    <div class="header-bar">
+        <img src="assets/images/OMH Logo.png" alt="OMH Logo" class="logo" />
+        <h1 class="title">DAILY FIELD REPORT</h1>
+      </div>
+    <div class="pwa-wrapper">
+    <div class="canvas">
+  <!-- Header Table -->
+      <table class="header-table">
+  <!--ROW 1-->
+  <tr>
+    <th>Date:</th>
+    <td><input type="date" /></td>
+    <th>Project Name:</th>
+    <td>
+      <select id="projectNameSelect" name="projectName">
+        <option value="">Select...</option>
+      </select>
+    </td>
+    <th>Report #:</th>
+    <td><input type="text" /></td>
+  </tr>
+
+  <!--ROW 2-->
+  <tr>
+    <th>Client:</th>
+    <td>
+      <select id="clientSelect" name="client">
+        <option value="">Select...</option>
+      </select>
+    </td>
+    <th>Project Location:</th>
+    <td>
+      <select id="locationSelect" name="projectLocation">
+        <option value="">Select...</option>
+      </select>
+    </td>
+    <th>Weather:</th>
+    <td>
+      <select id="weatherSelect" name="weather">
+        <option value="">Select...</option>
+      </select>
+    </td>
+  </tr>
+
+  <!--ROW 3-->
+  <tr>
+    <th>Client Project Number:</th>
+    <td>
+      <select id="clientProjectNumberSelect" name="clientProjectNumber">
+        <option value="">Select...</option>
+      </select>
+    </td>
+    <th>Project Number:</th>
+    <td>
+      <select id="projectNumberSelect" name="projectNumber">
+        <option value="">Select...</option>
+      </select>
+    </td>
+    <th>Temperature:</th>
+    <td><input type="text" /></td>
+  </tr>
+
+   <!--ROW 4-->
+  <tr>
+    <th>Client Inspection:</th>
+    <td><input type="text" /></td>
+    <th>OMH Supervisor:</th>
+    <td><input type="text" /></td>
+    <th>Site Conditions:</th>
+    <td><input type="text" /></td>
+  </tr>
+</table>
+
+<!--Cost Code Table-->
+     
+<table class="costcode-table" style="width: 100%; table-layout: fixed;">
+  <colgroup>
+    <col style="width: 567.5px;"> <!-- Label column: Cost Code / Activity -->
+    <col style="width: 193.5px;"> <!-- costCode1 / activity1 -->
+    <col style="width: 190px;"> <!-- costCode2 -->
+    <col style="width: 193px;"> <!-- costCode3 -->
+    <col style="width: 194px;"> <!-- costCode4 -->
+    <col style="width: 195px;"> <!-- costCode5 -->
+    <col style="width: 193.5px;"> <!-- costCode6 -->
+    <col style="width: auto;">  <!-- remaining space or padding -->
+  </colgroup>
+
+  <!-- Row 1: Cost Codes -->
+  <tr>
+    <td style="height: 60px; background-color: #edf1dc; text-align: right;"><strong>Cost Code:</strong></td>
+    <td style="background-color: #dbe5f1;"><select id="costCode1"></select></td>
+    <td style="background-color: #dbe5f1;"><select id="costCode2"></select></td>
+    <td style="background-color: #dbe5f1;"><select id="costCode3"></select></td>
+    <td style="background-color: #dbe5f1;"><select id="costCode4"></select></td>
+    <td style="background-color: #dbe5f1;"><select id="costCode5"></select></td>
+    <td style="background-color: #dbe5f1;"><select id="costCode6"></select></td>
+    <td style="background-color: #edf1dc;"></td>
+  </tr>
+
+  <!-- Row 2: Activities -->
+  <tr>
+    <td style="height: 60px; background-color: #edf1dc; text-align: right;"><strong>Activity:</strong></td>
+    <td style="background-color: #dbe5f1;"><input type="text" id="activity1" readonly /></td>
+    <td style="background-color: #dbe5f1;"><input type="text" id="activity2" readonly /></td>
+    <td style="background-color: #dbe5f1;"><input type="text" id="activity3" readonly /></td>
+    <td style="background-color: #dbe5f1;"><input type="text" id="activity4" readonly /></td>
+    <td style="background-color: #dbe5f1;"><input type="text" id="activity5" readonly /></td>
+    <td style="background-color: #dbe5f1;"><input type="text" id="activity6" readonly /></td>
+    <td style="background-color: #edf1dc;"></td>
+  </tr>
+</table>
+
+
+
+<!-- Manpower Table -->
+<table style="width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 14px;">
+  <colgroup>
+    <col style="width: 75px;">   <!-- Manpower -->
+    <col style="width: 75px;">   <!-- Classification -->
+    <col style="width: 23.5px;">   <!-- Total -->
+    <col style="width: 25px;">   <!-- LOA -->
+    <col style="width: 67.8px;"> <!-- Hour 1 -->
+    <col style="width: 66px;">   <!-- Hour 2 -->
+    <col style="width: 67.8px;"> <!-- Hour 3 -->
+    <col style="width: 67.8px;"> <!-- Hour 4 -->
+    <col style="width: 67.8px;"> <!-- Hour 5 -->
+    <col style="width: 67.8px;"> <!-- Hour 6 -->
+    <col style="width: 266.5px;">   <!-- Notes -->
+  </colgroup>
+
+  <!-- Header Row -->
+  <tr style="background-color: #dbe5f1; text-align: center;">
+    <th>Manpower</th>
+    <th>Classification</th>
+    <th class="centered-header">Total</th>
+    <th class="centered-header loa-header">LOA</th>
+    <th class="centered-header" colspan="6">hrs</th>
+    <th class="centered-header">Notes</th>
+
+  </tr>
+  
+  <!-- Input Row 1 -->
+  <tr class="manpower-row">
+    <td><select class="manpowerSelect"><option>Select...</option></select></td>
+    <td><select class="classificationSelect"><option>Select...</option></select></td>
+    <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
+    <td class="center-checkbox"><input type="checkbox" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td><input type="text" /></td>
+  </tr>
+<!-- Input Row 2 -->
+  <tr>
+    <td><select class="manpowerSelect"><option>Select...</option></select></td>
+    <td><select class="classificationSelect"><option>Select...</option></select></td>
+    <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
+    <td class="center-checkbox"><input type="checkbox" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td><input type="text" /></td>
+  </tr>
+<!-- Input Row 3 -->
+  <tr>
+    <td><select class="manpowerSelect"><option>Select...</option></select></td>
+    <td><select class="classificationSelect"><option>Select...</option></select></td>
+    <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
+    <td class="center-checkbox"><input type="checkbox" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td><input type="text" /></td>
+  </tr>
+<!-- Input Row 4 -->
+  <tr>
+    <td><select class="manpowerSelect"><option>Select...</option></select></td>
+    <td><select class="classificationSelect"><option>Select...</option></select></td>
+
+    <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
+    <td class="center-checkbox"><input type="checkbox" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td><input type="text" /></td>
+  </tr>
+<!-- Input Row 5 -->
+  <tr>
+    <td><select class="manpowerSelect"><option>Select...</option></select></td>
+    <td><select class="classificationSelect"><option>Select...</option></select></td>
+
+    <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
+    <td class="center-checkbox"><input type="checkbox" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td><input type="text" /></td>
+  </tr>
+<!-- Input Row 6 -->
+  <tr>
+    <td><select class="manpowerSelect"><option>Select...</option></select></td>
+    <td><select class="classificationSelect"><option>Select...</option></select></td>
+
+    <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
+    <td class="center-checkbox"><input type="checkbox" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td><input type="text" /></td>
+  </tr>
+<!-- Input Row 7 -->
+  <tr>
+    <td><select class="manpowerSelect"><option>Select...</option></select></td>
+    <td><select class="classificationSelect"><option>Select...</option></select></td>
+
+    <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
+    <td class="center-checkbox"><input type="checkbox" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td><input type="text" /></td>
+  </tr>
+<!-- Input Row 8 -->
+  <tr>
+    <td><select class="manpowerSelect"><option>Select...</option></select></td>
+    <td><select class="classificationSelect"><option>Select...</option></select></td>
+
+    <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
+    <td class="center-checkbox"><input type="checkbox" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td><input type="text" /></td>
+  </tr>
+<!-- Input Row 9 -->
+  <tr>
+    <td><select class="manpowerSelect"><option>Select...</option></select></td>
+    <td><select class="classificationSelect"><option>Select...</option></select></td>
+
+    <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
+    <td class="center-checkbox"><input type="checkbox" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td><input type="text" /></td>
+  </tr>
+<!-- Input Row 10 -->
+  <tr>
+    <td><select class="manpowerSelect"><option>Select...</option></select></td>
+    <td><select class="classificationSelect"><option>Select...</option></select></td>
+
+    <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
+    <td class="center-checkbox"><input type="checkbox" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td><input type="text" /></td>
+  </tr>
+<!-- Input Row 11 -->
+  <tr>
+    <td><select class="manpowerSelect"><option>Select...</option></select></td>
+    <td><select class="classificationSelect"><option>Select...</option></select></td>
+
+    <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
+    <td class="center-checkbox"><input type="checkbox" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td><input type="text" /></td>
+  </tr>
+<!-- Input Row 12 -->
+  <tr>
+   <td><select class="manpowerSelect"><option>Select...</option></select></td>
+    <td><select class="classificationSelect"><option>Select...</option></select></td>
+
+    <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
+    <td class="center-checkbox"><input type="checkbox" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td><input type="text" /></td>
+  </tr>
+<!-- Input Row 13 -->
+  <tr>
+    <td><select class="manpowerSelect"><option>Select...</option></select></td>
+    <td><select class="classificationSelect"><option>Select...</option></select></td>
+
+    <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
+    <td class="center-checkbox"><input type="checkbox" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td><input type="text" /></td>
+  </tr>
+<!-- Input Row 14 -->
+  <tr>
+   <td><select class="manpowerSelect"><option>Select...</option></select></td>
+    <td><select class="classificationSelect"><option>Select...</option></select></td>
+
+    <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
+    <td class="center-checkbox"><input type="checkbox" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td><input type="text" /></td>
+  </tr>
+<!-- Input Row 15 -->
+  <tr>
+    <td><select class="manpowerSelect"><option>Select...</option></select></td>
+    <td><select class="classificationSelect"><option>Select...</option></select></td>
+
+    <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
+    <td class="center-checkbox"><input type="checkbox" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
+    <td><input type="text" /></td>
+  </tr>
+</table>
+
+<!-- Totals / Equipment Table -->
+<table class="equipment-table" style="width: 100%; table-layout: fixed;">
+  <colgroup>
+    <col style="width: 197.5px;">   <!-- Total Hours -->
+    <col style="width: 31px;">   <!-- Total Hours value -->
+    <col style="width: 32px;">   <!-- Cost Code label -->
+    <col style="width: 89px;"> <!-- Cost Code 1 -->
+    <col style="width: 87px;"> <!-- Cost Code 2 -->
+    <col style="width: 89px;"> <!-- Cost Code 3 -->
+    <col style="width: 90px;"> <!-- Cost Code 4 -->
+    <col style="width: 89px;"> <!-- Cost Code 5 -->
+    <col style="width: 89px;"> <!-- Cost Code 6 -->
+    <col style="width: 100px;">  <!-- PO -->
+    <col style="width: 250px;"><!-- Notes -->
+  </colgroup>
+
+  <!-- Row 1: Totals and Cost Code Selects -->
+  <tr>
+    <td style="height: 60px; background-color: #edf1dc; text-align: right;"><strong>Total Hours:</strong></td>
+    <td style="background-color: #dbe5f1;"><input type="text" id="grandTotalHours" readonly /></td>
+    <td style="background-color: #edf1dc; text-align: center;"><strong>Cost Code:</strong></td>
+    <td style="background-color: #dbe5f1;"><select></select></td>
+    <td style="background-color: #dbe5f1;"><select></select></td>
+    <td style="background-color: #dbe5f1;"><select></select></td>
+    <td style="background-color: #dbe5f1;"><select></select></td>
+    <td style="background-color: #dbe5f1;"><select></select></td>
+    <td style="background-color: #dbe5f1;"><select></select></td>
+    <td rowspan="2" style="background-color: #edf1dc; text-align: center;"><strong>PO (if equipment is rented)</strong></td>
+    <td rowspan="2" style="background-color: #edf1dc; text-align: center;"><strong>Notes</strong></td>
+  </tr>
+
+  <!-- Row 2: Equipment Info and U of M -->
+  <tr>
+    <td style="height: 60px; background-color: #edf1dc; text-align: center;"><strong>Equipment OMH</strong></td>
+    <td style="background-color: #dbe5f1;"></td>
+    <td style="background-color: #edf1dc; text-align: center;"><strong>U of M</strong></td>
+    <td style="background-color: #dbe5f1;"></td>
+    <td style="background-color: #dbe5f1;"></td>
+    <td style="background-color: #dbe5f1;"></td>
+    <td style="background-color: #dbe5f1;"></td>
+    <td style="background-color: #dbe5f1;"></td>
+    <td style="background-color: #dbe5f1;"></td>
+  </tr>
+</table>
+
+
+    </div>
+
+    <!-- Javascript calls -->
+    <script src="script.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('service-worker.js')
+            .then(reg => console.log('Service Worker registered:', reg))
+            .catch(err => console.log('Service Worker registration failed:', err));
+        });
+      }
+    </script>
+
+  </body>
+</html>
+  
