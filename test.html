@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>jsPDF Test</title>
+</head>
+<body>
+  <button id="exportBtn">Export PDF</button>
+
+  <!-- Load html2canvas and jsPDF (in the correct order) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+
+  <!-- Confirm jsPDF loaded -->
+  <script>
+    console.log("✅ jsPDF loaded?", typeof jsPDF); // should say "function"
+  </script>
+
+  <!-- Basic test -->
+  <script>
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      const pdf = new jsPDF();
+      pdf.text("This is a test PDF", 10, 10);
+      pdf.save("test.pdf");
+    });
+  </script>
+</body>
+</html>

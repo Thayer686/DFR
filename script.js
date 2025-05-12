@@ -466,13 +466,13 @@ const activityMap = {
 
 
   
-        // Optional: debug client selection
-        //document.getElementById("clientSelect").addEventListener("change", function () {
-        //  console.log("Selected client:", this.value);
-       // });
-     // })
+      // Optional: debug client selection
+      //document.getElementById("clientSelect").addEventListener("change", function () {
+      //  console.log("Selected client:", this.value);
+      // });
+      // })
      // .catch(err => console.error("Failed to load dropdown lists", err));
-//  }
+    //  }
   
 
 function populateCostCodes(list) {
@@ -1176,48 +1176,50 @@ document.getElementById("resetFormBtn")?.addEventListener("click", () => {
   alert("🧼 Form reset and autosave cache cleared.");
 });
 
-// Export form to PDF
-document.getElementById("exportPdfBtn").addEventListener("click", () => {
-  const element = document.querySelector(".canvas");
-  const opt = {
-    margin:       0.5,
-    filename:     'DFR_Report.pdf',
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2 },
-    jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
-  };
-  html2pdf().set(opt).from(element).save();
-});
+const { jsPDF } = window.jspdf;
 
 // --- PDF Export ---
 document.getElementById("exportPdfBtn")?.addEventListener("click", async () => {
   const element = document.querySelector(".canvas");
 
-  // ✅ Save current transform styles
-  const originalTransform = element.style.transform;
-  const originalTransformOrigin = element.style.transformOrigin;
+  // Scroll to top to avoid offset capture
+  window.scrollTo(0, 0);
 
-  // ✅ Temporarily scale down to fit PDF page
-  element.style.transform = "scale(0.5)";
-  element.style.transformOrigin = "top left";
+  // Render the canvas from the visible form
+  const canvas = await html2canvas(element, {
+    scale: 2,
+    useCORS: true
+  });
 
-  // ✅ Wait for PDF to be generated
-  try {
-    await html2pdf().set({
-      margin:       0,
-      filename:     'DFR_Report.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 },
-      jsPDF:        { unit: 'pt', format: 'a4', orientation: 'landscape' }
-    }).from(element).save();
-  } catch (error) {
-    console.error("❌ PDF export failed:", error);
-    alert("PDF export failed. Check console for details.");
-  }
+  const imgData = canvas.toDataURL('image/jpeg', 1.0);
 
-  // ✅ Restore original styles
-  element.style.transform = originalTransform;
-  element.style.transformOrigin = originalTransformOrigin;
+  // Convert canvas size to inches for jsPDF
+  const pxPerInch = 96;
+  const widthInInches = canvas.width / pxPerInch;
+  const heightInInches = canvas.height / pxPerInch;
+
+  // ✅ HERE is where your block goes
+  const pdf = new jsPDF({
+    orientation: 'portrait',
+    unit: 'in',
+    format: [widthInInches, heightInInches]
+  });
+  
+
+  // Add the image to the PDF
+  pdf.addImage(imgData, 'JPEG', 0, 0, widthInInches, heightInInches);
+
+  // Generate dynamic filename
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  const dateStr = `${yyyy}${mm}${dd}`;
+
+  const projectNumber = document.getElementById("projectNumberSelect")?.value?.trim().replace(/\s+/g, "_") || "####";
+  const filename = `DFR_Initials_DIG_${projectNumber}_${dateStr}.pdf`;
+
+  pdf.save(filename);
 });
 
 
