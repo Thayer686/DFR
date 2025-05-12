@@ -434,36 +434,37 @@ const activityMap = {
       populateSelect("weatherSelect", data.weather);
       populateSelect("clientProjectNumberSelect", data.clientProjectNumbers);
       populateSelect("projectNumberSelect", data.projectNumbers);
+        
+        document.querySelectorAll(".manpowerSelect").forEach(select => {
+          populateSelectElement(select, data.manpower);
+        });
+  
+        document.querySelectorAll(".classificationSelect").forEach(select => {
+          populateSelectElement(select, data.classification);
+        });
+  
+        document.querySelectorAll(".equipmentSelect").forEach(select => {
+          populateSelectElement(select, data.equipment);
+        });
+  
+        document.querySelectorAll(".UofMSelect").forEach(select => {
+          populateSelectElement(select, data.UofM);
+        });
+  
+        document.querySelectorAll(".unitUsedSelect").forEach(select => {
+          populateSelectElement(select, data.UnitsUsedList);
+        });
+  
+        populateCostCodes(data.costCodes);
+        attachCostCodeListeners();
+        linkTopToBottomCostCodesWithOverride();  // ✅ Add this back immediately after costCode population
+        attachEquipmentRowListeners();
+        attachSubcontractorRowListeners();
+        attachUnitIdListeners();
 
-      document.querySelectorAll(".manpowerSelect").forEach(select => {
-        populateSelectElement(select, data.manpower);
-      });
-
-      document.querySelectorAll(".classificationSelect").forEach(select => {
-        populateSelectElement(select, data.classification);
-      });
-
-      document.querySelectorAll(".equipmentSelect").forEach(select => {
-        populateSelectElement(select, data.equipment);
-      });
-
-      document.querySelectorAll(".UofMSelect").forEach(select => {
-        populateSelectElement(select, data.UofM);
-      });
-
-      document.querySelectorAll(".unitUsedSelect").forEach(select => {
-        populateSelectElement(select, data.UnitsUsedList);
-      });
-
-      populateCostCodes(data.costCodes);
-      attachCostCodeListeners();
-      linkTopToBottomCostCodesWithOverride();
-      attachEquipmentRowListeners();
-      attachSubcontractorRowListeners();
-      attachUnitIdListeners();
+        return Promise.all(dropdownTasks); // Ensure all dropdowns are populated
     });
-}
-
+  }
 
   
         // Optional: debug client selection
@@ -627,6 +628,7 @@ function populateSelect(id, values) {
       });
     }
     
+
     //Grand total of equipment
     function updateEquipmentGrandTotal() {
       let sum = 0;
@@ -637,16 +639,6 @@ function populateSelect(id, values) {
       const output = document.getElementById("equipmentGrandTotal");
       if (output) output.value = sum.toFixed(2);
     }
-
-    function updateSubcontractorGrandTotal() {
-    let sum = 0;
-    document.querySelectorAll(".sub-total-field").forEach(input => {
-      const val = parseFloat(input.value);
-      if (!isNaN(val)) sum += val;
-    });
-    const output = document.getElementById("subcontractorGrandTotal");
-    if (output) output.value = sum.toFixed(2);
-  }
 
 
     //Subcontractor totals
@@ -705,7 +697,7 @@ function linkTopToBottomCostCodesWithOverride() {
   }
 }
 
-function attachUnitIdListeners() {
+
     document.querySelectorAll(".unitUsedSelect").forEach((unitSelect, index) => {
       const unitIdInputs = document.querySelectorAll(".unitIdInput");
     
@@ -718,7 +710,6 @@ function attachUnitIdListeners() {
         }
       });
     });
-  }
 
 
     // to take photo or select from device
@@ -874,85 +865,32 @@ function attachUnitIdListeners() {
 
 });
 
+ document.getElementById("saveFormBtn").addEventListener("click", saveForm);
 
+
+// --- Manual Save Function ---
 // --- Manual Save Function ---
 function saveForm() {
   const formData = {};
 
+  // 1. Save all inputs with IDs (text, select, textarea, checkbox)
   document.querySelectorAll("input, textarea, select").forEach(el => {
     if (el.id) {
       formData[el.id] = el.type === "checkbox" ? el.checked : el.value;
     }
-
-          // 🔥 NEW CODE START — Save signature canvas image
-    const signatureCanvas = document.querySelector(".signature-canvas");
-    if (signatureCanvas) {
-      formData.signatureCanvas = signatureCanvas.toDataURL("image/png");
-    }
-    // 🔥 NEW CODE END
   });
-
-
-
 
   formData.manpowerHours = Array.from(document.querySelectorAll(".hour-cell input")).map(i => i.value);
   formData.equipmentHours = Array.from(document.querySelectorAll(".equip-hour-cell input")).map(i => i.value);
   formData.subcontractorHours = Array.from(document.querySelectorAll(".sub-hour-cell input")).map(i => i.value);
 
-  formData.photos = {};
-  document.querySelectorAll(".photo-cell").forEach((cell, index) => {
-    const img = cell.querySelector("img");
-    if (img) {
-      formData.photos[`photo${index}`] = img.src;
-    }
-  });
-
-  // 👇 NEW: Debug preview
-  console.log("🔍 Form data to be saved:", formData);
-  alert("✅ Form data logged to console for debug.\nOpen DevTools (F12 > Console) to view it.");
-
-  const today = new Date();
-  const dd = String(today.getDate()).padStart(2, '0');
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const yyyy = today.getFullYear();
-  const dateStr = `${dd}_${mm}_${yyyy}`;
-  const projectNumber = document.getElementById("projectNumberSelect")?.value?.trim().replace(/\\s+/g, "_") || "####";
-  const defaultFilename = `DFR_Initials_DIG_${projectNumber}_${dateStr}`;
-  const filename = prompt("Enter a filename to save:", defaultFilename);
-  if (!filename) return;
-
-  const blob = new Blob([JSON.stringify(formData, null, 2)], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = filename + ".json";
-  a.click();
+  console.log("Form data saved:", formData);
+  // Save to file or localStorage here if needed
 }
 
-
-// --- Load Function ---
-document.getElementById("loadFormBtn").addEventListener("click", () => {
-  document.getElementById("loadInput").click();
-});
-
-document.getElementById("loadInput").addEventListener("change", function () {
-  const file = this.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const data = JSON.parse(e.target.result);
-    } catch (err) {
-      alert("❌ Could not load form. Make sure it's a valid .json file.");
-    }
-  };
-  reader.readAsText(file);
-});
-
-// --- Restore Function ---
+// --- CLEANED AUTOSAVE + RESTORE ---
 function restoreForm(data) {
   Object.keys(data).forEach(id => {
-    if (["photos", "manpowerHours", "equipmentHours", "subcontractorHours"].includes(id)) return;
     const el = document.getElementById(id);
     if (el) {
       if (el.type === "checkbox") {
@@ -960,78 +898,25 @@ function restoreForm(data) {
       } else {
         el.value = data[id];
       }
-      el.dispatchEvent(new Event("input", { bubbles: true }));
-      el.dispatchEvent(new Event("change", { bubbles: true }));
     }
-
-      // 🔥 NEW CODE START — Restore signature canvas image
-  if (data.signatureCanvas) {
-    const canvas = document.querySelector(".signature-canvas");
-    const ctx = canvas.getContext("2d");
-    const img = new Image();
-    img.onload = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    };
-    img.src = data.signatureCanvas;
-  }
-// 🔥 NEW CODE END
-
   });
 
+  const manpowerInputs = document.querySelectorAll(".hour-cell input");
   data.manpowerHours?.forEach((val, i) => {
-  const input = document.querySelectorAll(".hour-cell input")[i];
-  if (input) {
-    input.value = val;
-    input.dispatchEvent(new Event("input", { bubbles: true })); // 🔥 force total-field to recalculate
-  }
-});
+    if (manpowerInputs[i]) manpowerInputs[i].value = val;
+  });
 
-data.equipmentHours?.forEach((val, i) => {
-  const input = document.querySelectorAll(".equip-hour-cell input")[i];
-  if (input) {
-    input.value = val;
-    input.dispatchEvent(new Event("input", { bubbles: true })); // 🔥 force recalculation
-  }
-});
+  const equipmentInputs = document.querySelectorAll(".equip-hour-cell input");
+  data.equipmentHours?.forEach((val, i) => {
+    if (equipmentInputs[i]) equipmentInputs[i].value = val;
+  });
 
-data.subcontractorHours?.forEach((val, i) => {
-  const input = document.querySelectorAll(".sub-hour-cell input")[i];
-  if (input) {
-    input.value = val;
-    input.dispatchEvent(new Event("input", { bubbles: true })); // 🔥 force recalculation
-  }
-});
-
-
-  if (data.photos) {
-    document.querySelectorAll(".photo-cell").forEach((cell, index) => {
-      const src = data.photos[`photo${index}`];
-      if (src) {
-        const img = document.createElement("img");
-        img.src = src;
-
-        const removeBtn = document.createElement("button");
-        removeBtn.textContent = "✖";
-        removeBtn.className = "remove-btn";
-        removeBtn.addEventListener("click", event => {
-          event.stopPropagation();
-          cell.classList.remove("has-image");
-          cell.innerHTML = "";
-        });
-
-        cell.innerHTML = "";
-        cell.classList.add("has-image");
-        cell.appendChild(img);
-        cell.appendChild(removeBtn);
-      }
-    });
-  }
-
-  console.log("✅ Form restored.");
+  const subcontractorInputs = document.querySelectorAll(".sub-hour-cell input");
+  data.subcontractorHours?.forEach((val, i) => {
+    if (subcontractorInputs[i]) subcontractorInputs[i].value = val;
+  });
 }
 
-// --- Autosave Logic ---
 function autoSaveFormToCache() {
   const data = {};
 
@@ -1055,76 +940,19 @@ function attachAutosaveListeners() {
   });
 }
 
-function handleLoadFromFile() {
-  const file = this.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const data = JSON.parse(e.target.result);
-      restoreForm(data);
-    } catch (err) {
-      alert("❌ Could not load form. Make sure it's a valid .json file.");
-    }
-  };
-  reader.readAsText(file);
-}
-
-
 document.addEventListener("DOMContentLoaded", () => {
   loadLists().then(() => {
     attachAutosaveListeners();
-
-    // ✅ MOVE YOUR SAVE/LISTENERS HERE:
-    document.getElementById("saveFormBtn")?.addEventListener("click", saveForm);
-    document.getElementById("loadFormBtn")?.addEventListener("click", () => {
-      document.getElementById("loadInput").click();
-    });
-    document.getElementById("loadInput")?.addEventListener("change", handleLoadFromFile);
 
     const cached = localStorage.getItem("autosavedDFR");
     if (cached) {
       try {
         const data = JSON.parse(cached);
         restoreForm(data);
+        console.log("✅ Autosaved form restored.");
       } catch (err) {
-        console.warn("⚠️ Failed to restore autosaved form:", err);
+        console.warn("⚠️ Could not restore autosaved form.", err);
       }
     }
   });
 });
-
-document.getElementById("resetFormBtn")?.addEventListener("click", () => {
-  const confirmReset = confirm("Are you sure you want to clear the form and reset everything?");
-  if (!confirmReset) return;
-
-  // Clear all input, textarea, select fields
-  document.querySelectorAll("input, textarea, select").forEach(el => {
-    if (el.type === "checkbox") {
-      el.checked = false;
-    } else {
-      el.value = "";
-    }
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-    el.dispatchEvent(new Event("change", { bubbles: true }));
-  });
-
-  // Clear dynamic totals
-  document.querySelectorAll(".total-field, .equipment-total, .sub-total-field").forEach(input => {
-    input.value = "";
-  });
-
-  // Clear photo cells
-  document.querySelectorAll(".photo-cell").forEach(cell => {
-    cell.classList.remove("has-image");
-    cell.innerHTML = "";
-  });
-
-  // Clear local storage autosave
-  localStorage.removeItem("autosavedDFR");
-
-  alert("🧼 Form reset and autosave cache cleared.");
-});
-
-

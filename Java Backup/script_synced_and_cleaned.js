@@ -423,56 +423,57 @@ const activityMap = {
   };
   
 
+
   function loadLists() {
-  return fetch("data/dropdownlists.json")
-    .then(res => res.json())
-    .then(data => {
-      listData = data;
-      populateSelect("projectNameSelect", data.projectNames);
-      populateSelect("clientSelect", data.clients);
-      populateSelect("locationSelect", data.locations);
-      populateSelect("weatherSelect", data.weather);
-      populateSelect("clientProjectNumberSelect", data.clientProjectNumbers);
-      populateSelect("projectNumberSelect", data.projectNumbers);
-
-      document.querySelectorAll(".manpowerSelect").forEach(select => {
-        populateSelectElement(select, data.manpower);
-      });
-
-      document.querySelectorAll(".classificationSelect").forEach(select => {
-        populateSelectElement(select, data.classification);
-      });
-
-      document.querySelectorAll(".equipmentSelect").forEach(select => {
-        populateSelectElement(select, data.equipment);
-      });
-
-      document.querySelectorAll(".UofMSelect").forEach(select => {
-        populateSelectElement(select, data.UofM);
-      });
-
-      document.querySelectorAll(".unitUsedSelect").forEach(select => {
-        populateSelectElement(select, data.UnitsUsedList);
-      });
-
-      populateCostCodes(data.costCodes);
-      attachCostCodeListeners();
-      linkTopToBottomCostCodesWithOverride();
-      attachEquipmentRowListeners();
-      attachSubcontractorRowListeners();
-      attachUnitIdListeners();
-    });
-}
-
-
+    fetch("data/dropdownlists.json")
+      .then(res => res.json())
+      .then(data => {
+        listData = data;
+        populateSelect("projectNameSelect", data.projectNames);
+        populateSelect("clientSelect", data.clients);
+        populateSelect("locationSelect", data.locations);
+        populateSelect("weatherSelect", data.weather);
+        populateSelect("clientProjectNumberSelect", data.clientProjectNumbers);
+        populateSelect("projectNumberSelect", data.projectNumbers);
+        
+        document.querySelectorAll(".manpowerSelect").forEach(select => {
+          populateSelectElement(select, data.manpower);
+        });
+  
+        document.querySelectorAll(".classificationSelect").forEach(select => {
+          populateSelectElement(select, data.classification);
+        });
+  
+        document.querySelectorAll(".equipmentSelect").forEach(select => {
+          populateSelectElement(select, data.equipment);
+        });
+  
+        document.querySelectorAll(".UofMSelect").forEach(select => {
+          populateSelectElement(select, data.UofM);
+        });
+  
+        document.querySelectorAll(".unitUsedSelect").forEach(select => {
+          populateSelectElement(select, data.UnitsUsedList);
+        });
+  
+        populateCostCodes(data.costCodes);
+        attachCostCodeListeners();
+        attachEquipmentRowListeners();
+        attachSubcontractorRowListeners();
+        attachUnitIdListeners();
+  
+        // ✅ Safe to attach sync after all populating is done
+        setTimeout(() => {
+          linkTopToBottomCostCodesWithOverride();
+        }, 0);
   
         // Optional: debug client selection
-        //document.getElementById("clientSelect").addEventListener("change", function () {
-        //  console.log("Selected client:", this.value);
-       // });
-     // })
-     // .catch(err => console.error("Failed to load dropdown lists", err));
-//  }
+        document.getElementById("clientSelect").addEventListener("change", function () {
+          console.log("Selected client:", this.value);
+        });
+      })
+      .catch(err => console.error("Failed to load dropdown lists", err));
+  }
   
 
 function populateCostCodes(list) {
@@ -535,21 +536,23 @@ function populateSelectElement(select, list) {
 
 function populateSelect(id, values) {
   const select = document.getElementById(id);
-  if (!select || !Array.isArray(values)) return;
+  if (!select || !Array.isArray(values)) {
+    console.warn(`Dropdown skipped: ${id}`, values);
+    return;
+  }
 
-  // Sort values alphabetically
-  const sortedValues = [...values].sort((a, b) => a.localeCompare(b));
-
-  // Clear and repopulate dropdown
-  select.innerHTML = '<option value="">Select...</option>';
-  sortedValues.forEach(val => {
-    const option = document.createElement("option");
-    option.value = val;
-    option.textContent = val;
-    select.appendChild(option);
-  });
-}
-
+  
+    // Sort alphabetically
+    const sortedValues = [...values].sort((a, b) => a.localeCompare(b));
+  
+    select.innerHTML = '<option value="">Select...</option>';
+    sortedValues.forEach(val => {
+      const option = document.createElement("option");
+      option.value = val;
+      option.textContent = val;
+      select.appendChild(option);
+    });
+  }
   
     document.addEventListener("mouseout", function (e) {
       if (e.target.classList.contains("option")) {
@@ -627,6 +630,7 @@ function populateSelect(id, values) {
       });
     }
     
+
     //Grand total of equipment
     function updateEquipmentGrandTotal() {
       let sum = 0;
@@ -637,16 +641,6 @@ function populateSelect(id, values) {
       const output = document.getElementById("equipmentGrandTotal");
       if (output) output.value = sum.toFixed(2);
     }
-
-    function updateSubcontractorGrandTotal() {
-    let sum = 0;
-    document.querySelectorAll(".sub-total-field").forEach(input => {
-      const val = parseFloat(input.value);
-      if (!isNaN(val)) sum += val;
-    });
-    const output = document.getElementById("subcontractorGrandTotal");
-    if (output) output.value = sum.toFixed(2);
-  }
 
 
     //Subcontractor totals
@@ -680,32 +674,32 @@ function populateSelect(id, values) {
     }
     
 
-function linkTopToBottomCostCodesWithOverride() {
-  for (let i = 1; i <= 6; i++) {
-    const top = document.getElementById(`costCode${i}`);
-    const bottom = document.getElementById(`costCode${i + 6}`);
-
-    if (top && bottom) {
-      (function(top, bottom) {
-        let isSynced = true;
-
-        top.addEventListener("change", () => {
-          if (isSynced) {
-            bottom.value = top.value;
-          }
-        });
-
-        bottom.addEventListener("input", () => {
-          if (bottom.value !== top.value) {
-            isSynced = false;
-          }
-        });
-      })(top, bottom);
+    //Link top cost code to bottom cost code
+    function linkTopToBottomCostCodesWithOverride() {
+      for (let i = 1; i <= 6; i++) {
+        const top = document.getElementById(`costCode${i}`);
+        const bottom = document.getElementById(`costCode${i + 6}`);
+    
+        if (top && bottom) {
+          let isSynced = true;
+    
+          top.addEventListener("change", () => {
+            if (isSynced) {
+              bottom.value = top.value;
+            }
+          });
+    
+          bottom.addEventListener("input", () => {
+            if (bottom.value !== top.value) {
+              isSynced = false;
+            }
+          });
+        }
+      }
     }
-  }
-}
+    
+    
 
-function attachUnitIdListeners() {
     document.querySelectorAll(".unitUsedSelect").forEach((unitSelect, index) => {
       const unitIdInputs = document.querySelectorAll(".unitIdInput");
     
@@ -718,7 +712,6 @@ function attachUnitIdListeners() {
         }
       });
     });
-  }
 
 
     // to take photo or select from device
@@ -870,261 +863,22 @@ function attachUnitIdListeners() {
 
   // Optional: clear the canvas if they cancel signing
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  });
-
 });
 
-
-// --- Manual Save Function ---
-function saveForm() {
-  const formData = {};
-
-  document.querySelectorAll("input, textarea, select").forEach(el => {
-    if (el.id) {
-      formData[el.id] = el.type === "checkbox" ? el.checked : el.value;
-    }
-
-          // 🔥 NEW CODE START — Save signature canvas image
-    const signatureCanvas = document.querySelector(".signature-canvas");
-    if (signatureCanvas) {
-      formData.signatureCanvas = signatureCanvas.toDataURL("image/png");
-    }
-    // 🔥 NEW CODE END
-  });
-
-
-
-
-  formData.manpowerHours = Array.from(document.querySelectorAll(".hour-cell input")).map(i => i.value);
-  formData.equipmentHours = Array.from(document.querySelectorAll(".equip-hour-cell input")).map(i => i.value);
-  formData.subcontractorHours = Array.from(document.querySelectorAll(".sub-hour-cell input")).map(i => i.value);
-
-  formData.photos = {};
-  document.querySelectorAll(".photo-cell").forEach((cell, index) => {
-    const img = cell.querySelector("img");
-    if (img) {
-      formData.photos[`photo${index}`] = img.src;
-    }
-  });
-
-  // 👇 NEW: Debug preview
-  console.log("🔍 Form data to be saved:", formData);
-  alert("✅ Form data logged to console for debug.\nOpen DevTools (F12 > Console) to view it.");
-
-  const today = new Date();
-  const dd = String(today.getDate()).padStart(2, '0');
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const yyyy = today.getFullYear();
-  const dateStr = `${dd}_${mm}_${yyyy}`;
-  const projectNumber = document.getElementById("projectNumberSelect")?.value?.trim().replace(/\\s+/g, "_") || "####";
-  const defaultFilename = `DFR_Initials_DIG_${projectNumber}_${dateStr}`;
-  const filename = prompt("Enter a filename to save:", defaultFilename);
-  if (!filename) return;
-
-  const blob = new Blob([JSON.stringify(formData, null, 2)], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = filename + ".json";
-  a.click();
-}
-
-
-// --- Load Function ---
-document.getElementById("loadFormBtn").addEventListener("click", () => {
-  document.getElementById("loadInput").click();
-});
-
-document.getElementById("loadInput").addEventListener("change", function () {
-  const file = this.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const data = JSON.parse(e.target.result);
-    } catch (err) {
-      alert("❌ Could not load form. Make sure it's a valid .json file.");
-    }
-  };
-  reader.readAsText(file);
-});
-
-// --- Restore Function ---
-function restoreForm(data) {
-  Object.keys(data).forEach(id => {
-    if (["photos", "manpowerHours", "equipmentHours", "subcontractorHours"].includes(id)) return;
-    const el = document.getElementById(id);
-    if (el) {
-      if (el.type === "checkbox") {
-        el.checked = data[id];
-      } else {
-        el.value = data[id];
-      }
-      el.dispatchEvent(new Event("input", { bubbles: true }));
-      el.dispatchEvent(new Event("change", { bubbles: true }));
-    }
-
-      // 🔥 NEW CODE START — Restore signature canvas image
-  if (data.signatureCanvas) {
-    const canvas = document.querySelector(".signature-canvas");
-    const ctx = canvas.getContext("2d");
-    const img = new Image();
-    img.onload = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    };
-    img.src = data.signatureCanvas;
-  }
-// 🔥 NEW CODE END
-
-  });
-
-  data.manpowerHours?.forEach((val, i) => {
-  const input = document.querySelectorAll(".hour-cell input")[i];
-  if (input) {
-    input.value = val;
-    input.dispatchEvent(new Event("input", { bubbles: true })); // 🔥 force total-field to recalculate
-  }
-});
-
-data.equipmentHours?.forEach((val, i) => {
-  const input = document.querySelectorAll(".equip-hour-cell input")[i];
-  if (input) {
-    input.value = val;
-    input.dispatchEvent(new Event("input", { bubbles: true })); // 🔥 force recalculation
-  }
-});
-
-data.subcontractorHours?.forEach((val, i) => {
-  const input = document.querySelectorAll(".sub-hour-cell input")[i];
-  if (input) {
-    input.value = val;
-    input.dispatchEvent(new Event("input", { bubbles: true })); // 🔥 force recalculation
-  }
-});
-
-
-  if (data.photos) {
-    document.querySelectorAll(".photo-cell").forEach((cell, index) => {
-      const src = data.photos[`photo${index}`];
-      if (src) {
-        const img = document.createElement("img");
-        img.src = src;
-
-        const removeBtn = document.createElement("button");
-        removeBtn.textContent = "✖";
-        removeBtn.className = "remove-btn";
-        removeBtn.addEventListener("click", event => {
-          event.stopPropagation();
-          cell.classList.remove("has-image");
-          cell.innerHTML = "";
-        });
-
-        cell.innerHTML = "";
-        cell.classList.add("has-image");
-        cell.appendChild(img);
-        cell.appendChild(removeBtn);
-      }
+      
+      
     });
-  }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  
 
-  console.log("✅ Form restored.");
-}
-
-// --- Autosave Logic ---
-function autoSaveFormToCache() {
-  const data = {};
-
-  document.querySelectorAll("input, textarea, select").forEach(el => {
-    if (el.id) {
-      data[el.id] = el.type === "checkbox" ? el.checked : el.value;
-    }
-  });
-
-  data.manpowerHours = Array.from(document.querySelectorAll(".hour-cell input")).map(i => i.value);
-  data.equipmentHours = Array.from(document.querySelectorAll(".equip-hour-cell input")).map(i => i.value);
-  data.subcontractorHours = Array.from(document.querySelectorAll(".sub-hour-cell input")).map(i => i.value);
-
-  localStorage.setItem("autosavedDFR", JSON.stringify(data));
-}
-
-function attachAutosaveListeners() {
-  document.querySelectorAll("input, textarea, select").forEach(el => {
-    el.addEventListener("input", autoSaveFormToCache);
-    el.addEventListener("change", autoSaveFormToCache);
-  });
-}
-
-function handleLoadFromFile() {
-  const file = this.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const data = JSON.parse(e.target.result);
-      restoreForm(data);
-    } catch (err) {
-      alert("❌ Could not load form. Make sure it's a valid .json file.");
-    }
-  };
-  reader.readAsText(file);
-}
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  loadLists().then(() => {
-    attachAutosaveListeners();
-
-    // ✅ MOVE YOUR SAVE/LISTENERS HERE:
-    document.getElementById("saveFormBtn")?.addEventListener("click", saveForm);
-    document.getElementById("loadFormBtn")?.addEventListener("click", () => {
-      document.getElementById("loadInput").click();
-    });
-    document.getElementById("loadInput")?.addEventListener("change", handleLoadFromFile);
-
-    const cached = localStorage.getItem("autosavedDFR");
-    if (cached) {
-      try {
-        const data = JSON.parse(cached);
-        restoreForm(data);
-      } catch (err) {
-        console.warn("⚠️ Failed to restore autosaved form:", err);
-      }
-    }
-  });
-});
-
-document.getElementById("resetFormBtn")?.addEventListener("click", () => {
-  const confirmReset = confirm("Are you sure you want to clear the form and reset everything?");
-  if (!confirmReset) return;
-
-  // Clear all input, textarea, select fields
-  document.querySelectorAll("input, textarea, select").forEach(el => {
-    if (el.type === "checkbox") {
-      el.checked = false;
-    } else {
-      el.value = "";
-    }
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-    el.dispatchEvent(new Event("change", { bubbles: true }));
-  });
-
-  // Clear dynamic totals
-  document.querySelectorAll(".total-field, .equipment-total, .sub-total-field").forEach(input => {
-    input.value = "";
-  });
-
-  // Clear photo cells
-  document.querySelectorAll(".photo-cell").forEach(cell => {
-    cell.classList.remove("has-image");
-    cell.innerHTML = "";
-  });
-
-  // Clear local storage autosave
-  localStorage.removeItem("autosavedDFR");
-
-  alert("🧼 Form reset and autosave cache cleared.");
-});
-
-
+window.addEventListener("DOMContentLoaded", loadLists);
