@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#1e3a5f" />
-
+  
 </head>
 
 <body>
@@ -559,9 +559,9 @@
   </tr>
   <!--Row 12-->
   <tr class="equipment-row">
-    <td><select class="equipmentSelect" id="equipmentselect11"><option>Select...</option></select></td>
+    <td><select class="equipmentSelect" id="equipmentselect12"><option>Select...</option></select></td>
     <td class="equipment-total-cell"><input type="number" value="0.00" readonly class="total-field equipment-total" /></td>
-    <td class="UofM-center"><select class="UofMSelect uofm-select" id="uofm11"><option>Select...</option></select></td>
+    <td class="UofM-center"><select class="UofMSelect uofm-select" id="uofm12"><option>Select...</option></select></td>
     <td class="equip-hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
     <td class="equip-hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
     <td class="equip-hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
@@ -852,57 +852,54 @@
     <td style="background-color: #c5d9f1; text-align: center; width: 20%;">
       Client Representative<br>and Position:
     </td>
-    <!-- Client Name & Position Field -->
-    <td style="background-color: #dbe5f1; width: 30%;">
-      <div class="signature-area">
-        <textarea class="text-entry" placeholder="Type or Sign..."></textarea>
-        <canvas class="signature-canvas" style="display: none;"></canvas>
-        <div class="signature-controls" style="display: none;">
-          <button type="button" class="done-signature">✅ Done</button>
-          <button type="button" class="cancel-signature">⌨️ Typing</button>
-        </div>
-        
-        <button type="button" class="toggle-signature">✎ Sign</button>
-      </div>
+    <td style="background-color: #dbe5f1; width: 30%; ">
+      <input type="text" id="clientRepPosition" placeholder="Enter name and title..." />
     </td>
+    
     
     <td style="background-color: #c5d9f1; text-align: center; width: 15%;">Signature:</td>
     <!-- Signature Field -->
 <td style="background-color: #dbe5f1; width: 35%;">
   <div class="signature-area">
-    <textarea class="text-entry" placeholder="Type or Sign..."></textarea>
+    <textarea class="text-entry" style="display: none;"></textarea>
     <canvas class="signature-canvas" style="display: none;"></canvas>
     <div class="signature-controls" style="display: none;">
       <button type="button" class="done-signature">✅ Done</button>
-      <button type="button" class="cancel-signature">⌨️ Typing</button>
+      <button type="button" class="cancel-signature">❌ Cancel</button>
     </div>
-    
-    <button type="button" class="toggle-signature">✎ Sign</button>
+    <button type="button" class="toggle-signature">✍️ Sign</button>
   </div>
+  
   
 </td>
   </tr>
 </table>
 
 
-<!-- Save Button -->
+<!-- Save, Load, Export, Reset Buttons -->
 <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
-  <!-- Left-side buttons -->
+  <!-- Left -->
   <div>
     <button id="saveFormBtn" style="padding: 8px 16px; font-size: 14px;">💾 Save Form</button>
     <button id="loadFormBtn" style="padding: 8px 16px; font-size: 14px;">📂 Load Form</button>
     <input type="file" id="loadInput" style="display: none;" accept=".json">
   </div>
 
-  <!-- Right-side reset button -->
+  <!-- Center -->
+  <div>
+    <button id="exportPdfBtn"  style="padding: 8px 16px;
+    font-size: 14px;
+    background-color: #e0f7fa;
+    border: 1px solid #00838f;
+    margin-left: -130px;">🧾 Export to PDF</button>
+    
+  </div>
+
+  <!-- Right -->
   <div>
     <button id="resetFormBtn" style="padding: 8px 16px; font-size: 14px; background-color: #fdd; border: 1px solid #f00;">♻️ Reset Form</button>
   </div>
 </div>
-
-
- 
-
 
     </div>
 
@@ -917,7 +914,7 @@
         });
       }
     </script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   </body>
 </html>
   

@@ -744,22 +744,31 @@ function attachUnitIdListeners() {
             reader.onload = e => {
               const img = document.createElement("img");
               img.src = e.target.result;
-    
+            
               const removeBtn = document.createElement("button");
               removeBtn.textContent = "✖";
               removeBtn.className = "remove-btn";
-    
+            
               removeBtn.addEventListener("click", event => {
-                event.stopPropagation(); // prevent cell click
+                event.stopPropagation();
                 cell.classList.remove("has-image");
-                cell.innerHTML = ""; // restore to default
+                cell.innerHTML = "";
               });
-    
-              cell.innerHTML = ""; // clear icon
+            
+              cell.innerHTML = "";
               cell.classList.add("has-image");
               cell.appendChild(img);
               cell.appendChild(removeBtn);
+            
+              // ✅ Add download link
+              const backupLink = document.createElement("a");
+              backupLink.href = e.target.result;
+              backupLink.download = `photo_${Date.now()}.jpg`;
+              backupLink.textContent = "📥 Tap to save to device";
+              backupLink.className = "photo-download-link";
+              cell.appendChild(backupLink);
             };
+            
             reader.readAsDataURL(file);
           }
         };
@@ -768,33 +777,33 @@ function attachUnitIdListeners() {
       });
     });
 
-    document.querySelectorAll(".signature-area").forEach(area => {
-      const toggleBtn = area.querySelector(".toggle-signature");
-      const doneBtn = area.querySelector(".done-signature");
-      const canvas = area.querySelector(".signature-canvas");
-      const textarea = area.querySelector(".text-entry");
-      const controls = area.querySelector(".signature-controls");
+    const signatureBox = document.querySelectorAll(".signature-area")[0]; // assuming only one real canvas now
+
+    if (signatureBox) {
+      const toggleBtn = signatureBox.querySelector(".toggle-signature");
+      const doneBtn = signatureBox.querySelector(".done-signature");
+      const cancelBtn = signatureBox.querySelector(".cancel-signature");
+      const canvas = signatureBox.querySelector(".signature-canvas");
+      const textarea = signatureBox.querySelector(".text-entry");
+      const controls = signatureBox.querySelector(".signature-controls");
     
       let ctx, drawing = false;
     
-      toggleBtn.addEventListener("click", () => {
-        // Lock orientation if supported
-        if (screen.orientation && screen.orientation.lock) {
+      toggleBtn?.addEventListener("click", () => {
+        if (screen.orientation?.lock) {
           screen.orientation.lock("portrait").catch(() => {});
         }
-      
+    
         canvas.style.display = "block";
         controls.style.display = "block";
         textarea.style.display = "none";
         document.body.classList.add("noscroll");
     
-        // Clear canvas for a new signature
         ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
     
-        // Enable drawing
         canvas.onmousedown = e => {
           drawing = true;
           ctx.beginPath();
@@ -808,7 +817,6 @@ function attachUnitIdListeners() {
         };
         canvas.onmouseup = canvas.onmouseleave = () => drawing = false;
     
-        // Touch support
         canvas.ontouchstart = e => {
           e.preventDefault();
           const touch = e.touches[0];
@@ -828,21 +836,19 @@ function attachUnitIdListeners() {
         canvas.ontouchend = () => drawing = false;
       });
     
-      doneBtn.addEventListener("click", () => {
-        if (screen.orientation && screen.orientation.unlock) {
+      doneBtn?.addEventListener("click", () => {
+        if (screen.orientation?.unlock) {
           screen.orientation.unlock();
         }
-        
+    
         controls.style.display = "none";
         document.body.classList.remove("noscroll");
-      
-        // If the user used the canvas, lock it and hide the text box
+    
         const isEmptyCanvas = ctx.getImageData(0, 0, canvas.width, canvas.height).data.every(v => v === 0);
-        
         if (!isEmptyCanvas) {
-          textarea.style.display = "none"; // Only hide text input if they actually signed
+          textarea.style.display = "none";
           canvas.style.cursor = "default";
-      
+    
           // Disable drawing
           canvas.onmousedown = null;
           canvas.onmousemove = null;
@@ -855,24 +861,21 @@ function attachUnitIdListeners() {
           canvas.style.display = "none";
         }
       });
-
-      const cancelBtn = area.querySelector(".cancel-signature");
-
-      cancelBtn.addEventListener("click", () => {
-        if (screen.orientation && screen.orientation.unlock) {
+    
+      cancelBtn?.addEventListener("click", () => {
+        if (screen.orientation?.unlock) {
           screen.orientation.unlock();
         }
-        
+    
         controls.style.display = "none";
         canvas.style.display = "none";
         textarea.style.display = "block";
         document.body.classList.remove("noscroll");
+        ctx?.clearRect(0, 0, canvas.width, canvas.height);
+      });
+    }
+    
 
-  // Optional: clear the canvas if they cancel signing
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  });
-
-});
 
 
 // --- Manual Save Function ---
@@ -883,15 +886,20 @@ function saveForm() {
     if (el.id) {
       formData[el.id] = el.type === "checkbox" ? el.checked : el.value;
     }
-
-          // 🔥 NEW CODE START — Save signature canvas image
-    const signatureCanvas = document.querySelector(".signature-canvas");
-    if (signatureCanvas) {
-      formData.signatureCanvas = signatureCanvas.toDataURL("image/png");
-    }
-    // 🔥 NEW CODE END
   });
 
+// 🔥 NEW: Save all signature canvases as base64
+document.querySelectorAll(".signature-canvas").forEach((canvas, index) => {
+  if (!canvas) return;
+  const key = `signatureCanvas${index}`;
+  const ctx = canvas.getContext("2d");
+const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+const isBlank = imageData.data.every(v => v === 0);
+if (!isBlank) {
+  formData[key] = canvas.toDataURL("image/png");
+}
+
+});
 
 
 
@@ -928,27 +936,6 @@ function saveForm() {
   a.click();
 }
 
-
-// --- Load Function ---
-document.getElementById("loadFormBtn").addEventListener("click", () => {
-  document.getElementById("loadInput").click();
-});
-
-document.getElementById("loadInput").addEventListener("change", function () {
-  const file = this.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const data = JSON.parse(e.target.result);
-    } catch (err) {
-      alert("❌ Could not load form. Make sure it's a valid .json file.");
-    }
-  };
-  reader.readAsText(file);
-});
-
 // --- Restore Function ---
 function restoreForm(data) {
   Object.keys(data).forEach(id => {
@@ -963,20 +950,6 @@ function restoreForm(data) {
       el.dispatchEvent(new Event("input", { bubbles: true }));
       el.dispatchEvent(new Event("change", { bubbles: true }));
     }
-
-      // 🔥 NEW CODE START — Restore signature canvas image
-  if (data.signatureCanvas) {
-    const canvas = document.querySelector(".signature-canvas");
-    const ctx = canvas.getContext("2d");
-    const img = new Image();
-    img.onload = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    };
-    img.src = data.signatureCanvas;
-  }
-// 🔥 NEW CODE END
-
   });
 
   data.manpowerHours?.forEach((val, i) => {
@@ -1028,6 +1001,26 @@ data.subcontractorHours?.forEach((val, i) => {
     });
   }
 
+ // 🔥 Restore signature canvases
+document.querySelectorAll(".signature-canvas").forEach((canvas, index) => {
+  const key = `signatureCanvas${index}`;
+  const base64 = data[key];
+  if (base64) {
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      canvas.style.display = "block";
+      canvas.parentElement.querySelector(".text-entry").style.display = "none";
+      const controls = canvas.parentElement.querySelector(".signature-controls");
+      if (controls) controls.style.display = "none";
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+    img.src = base64;
+  }
+});
+
+
   console.log("✅ Form restored.");
 }
 
@@ -1041,11 +1034,38 @@ function autoSaveFormToCache() {
     }
   });
 
+// 🔥 Save signature canvases for autosave
+document.querySelectorAll(".signature-canvas").forEach((canvas, index) => {
+  if (!canvas) return;
+  const key = `signatureCanvas${index}`;
+  const ctx = canvas.getContext("2d");
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const isBlank = imageData.data.every(v => v === 0);
+  if (!isBlank) {
+    data[key] = canvas.toDataURL("image/png");  // ✅ Correct variable
+  }
+});
+
+
+// 🔥 Save photos for autosave
+data.photos = {};
+document.querySelectorAll(".photo-cell").forEach((cell, index) => {
+  const img = cell.querySelector("img");
+  if (img) {
+    data.photos[`photo${index}`] = img.src;
+  }
+});
+
+
+
   data.manpowerHours = Array.from(document.querySelectorAll(".hour-cell input")).map(i => i.value);
   data.equipmentHours = Array.from(document.querySelectorAll(".equip-hour-cell input")).map(i => i.value);
   data.subcontractorHours = Array.from(document.querySelectorAll(".sub-hour-cell input")).map(i => i.value);
 
-  localStorage.setItem("autosavedDFR", JSON.stringify(data));
+  const jsonData = JSON.stringify(data);
+localStorage.setItem("autosavedDFR", jsonData);
+sessionStorage.setItem("autosavedDFR", jsonData);
+
 }
 
 function attachAutosaveListeners() {
@@ -1076,24 +1096,36 @@ document.addEventListener("DOMContentLoaded", () => {
   loadLists().then(() => {
     attachAutosaveListeners();
 
-    // ✅ MOVE YOUR SAVE/LISTENERS HERE:
+    // ✅ Save
     document.getElementById("saveFormBtn")?.addEventListener("click", saveForm);
-    document.getElementById("loadFormBtn")?.addEventListener("click", () => {
-      document.getElementById("loadInput").click();
-    });
-    document.getElementById("loadInput")?.addEventListener("change", handleLoadFromFile);
 
-    const cached = localStorage.getItem("autosavedDFR");
-    if (cached) {
-      try {
-        const data = JSON.parse(cached);
-        restoreForm(data);
-      } catch (err) {
-        console.warn("⚠️ Failed to restore autosaved form:", err);
-      }
-    }
+    // ✅ Reset existing input and attach change handler ONCE
+    const loadInput = document.getElementById("loadInput");
+    const newInput = loadInput.cloneNode(true);
+    loadInput.replaceWith(newInput);
+
+    newInput.addEventListener("change", handleLoadFromFile);
+
+    // ✅ Load button click triggers ONLY ONE file input
+    document.getElementById("loadFormBtn").addEventListener("click", () => {
+      newInput.value = ""; // reset to allow same file to be reselected
+      newInput.click();
+    });
+
+    // ✅ Restore autosaved form
+    const cached = sessionStorage.getItem("autosavedDFR") || localStorage.getItem("autosavedDFR");
+if (cached) {
+  try {
+    const data = JSON.parse(cached);
+    requestAnimationFrame(() => restoreForm(data));
+  } catch (err) {
+    console.warn("⚠️ Failed to restore autosaved form:", err);
+  }
+}
+
   });
 });
+
 
 document.getElementById("resetFormBtn")?.addEventListener("click", () => {
   const confirmReset = confirm("Are you sure you want to clear the form and reset everything?");
@@ -1124,7 +1156,79 @@ document.getElementById("resetFormBtn")?.addEventListener("click", () => {
   // Clear local storage autosave
   localStorage.removeItem("autosavedDFR");
 
+  // 🔥 Clear signature canvases
+    document.querySelectorAll(".signature-canvas").forEach(canvas => {
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      canvas.style.display = "none";
+    });
+  
+  // 🔥 Reset signature areas back to text entry
+    document.querySelectorAll(".signature-area").forEach(area => {
+      const textarea = area.querySelector(".text-entry");
+      const controls = area.querySelector(".signature-controls");
+  
+      if (textarea) textarea.style.display = "block";
+      if (controls) controls.style.display = "none";
+    });
+  
+
   alert("🧼 Form reset and autosave cache cleared.");
 });
+
+// Export form to PDF
+document.getElementById("exportPdfBtn").addEventListener("click", () => {
+  const element = document.querySelector(".canvas");
+  const opt = {
+    margin:       0.5,
+    filename:     'DFR_Report.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2 },
+    jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+  };
+  html2pdf().set(opt).from(element).save();
+});
+
+// --- PDF Export ---
+document.getElementById("exportPdfBtn")?.addEventListener("click", async () => {
+  const element = document.querySelector(".canvas");
+
+  // ✅ Save current transform styles
+  const originalTransform = element.style.transform;
+  const originalTransformOrigin = element.style.transformOrigin;
+
+  // ✅ Temporarily scale down to fit PDF page
+  element.style.transform = "scale(0.5)";
+  element.style.transformOrigin = "top left";
+
+  // ✅ Wait for PDF to be generated
+  try {
+    await html2pdf().set({
+      margin:       0,
+      filename:     'DFR_Report.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'pt', format: 'a4', orientation: 'landscape' }
+    }).from(element).save();
+  } catch (error) {
+    console.error("❌ PDF export failed:", error);
+    alert("PDF export failed. Check console for details.");
+  }
+
+  // ✅ Restore original styles
+  element.style.transform = originalTransform;
+  element.style.transformOrigin = originalTransformOrigin;
+});
+
+
+
+// 🔁 Ensure autosave triggers before page refresh (F5, close, etc.)
+window.addEventListener("beforeunload", autoSaveFormToCache);
+
+
+
+
+
+
 
 
