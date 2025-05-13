@@ -1206,11 +1206,14 @@ document.getElementById("exportPdfBtn")?.addEventListener("click", async () => {
 
   // Render the canvas from the visible form
   const canvas = await html2canvas(element, {
-    scale: 2,
-    useCORS: true
-  });
+  scale: 3,          // 🔥 bump from 2 → 3 for higher pixel density
+  useCORS: true,
+  backgroundColor: null // optional: transparent background if needed
+});
 
-  const imgData = canvas.toDataURL('image/jpeg', 1.0);
+
+  const imgData = canvas.toDataURL('image/png');
+
 
   // Convert canvas size to inches for jsPDF
   const pxPerInch = 96;

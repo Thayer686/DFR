@@ -81,7 +81,7 @@ select {
   width: 100%;
   padding: 10px;
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.2;
   min-height: 36px;
   text-align: left;
   vertical-align: middle;
@@ -89,7 +89,6 @@ select {
   background-color: #fff;
   border: 1px solid #aaa;
 }
-
   
   /* Optional: Style for full-width notes or activity boxes */
   textarea {
@@ -500,6 +499,20 @@ select {
   text-align: left;
   text-align-last: left;
 }
+
+input[type="date"] {
+  text-align: left !important;
+  text-align-last: left !important; /* For Safari */
+  direction: ltr !important;
+  font-size: 13px !important;
+  padding: 10px !important;
+  min-height: 36px !important;
+  height: auto !important;
+  box-sizing: border-box !important;
+  -webkit-appearance: none !important; /* remove iOS styling */
+  align: left !important;
+}
+
 
 
 
