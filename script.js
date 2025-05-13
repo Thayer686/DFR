@@ -1,4 +1,5 @@
 console.log("Daily Field Report form loaded.");
+const CACHE_NAME = 'field-report-v4'; // 🔁 bump this for every update
 
 let listData = {};
 
@@ -1312,6 +1313,9 @@ const mailtoLink = `mailto:${recipients}?subject=${encodeURIComponent(filename)}
     window.location.href = mailtoLink;
   }, 500);
 });
+
+
+
 
 
 // 🔁 Ensure autosave triggers before page refresh (F5, close, etc.)
