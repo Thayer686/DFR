@@ -1,4 +1,4 @@
-const CACHE_NAME = 'field-report-v1';
+const CACHE_NAME = 'field-report-v2';
 const urlsToCache = [
   'index.html',
   'style.css',
