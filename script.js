@@ -760,14 +760,14 @@ function attachUnitIdListeners() {
               cell.appendChild(img);
               cell.appendChild(removeBtn);
             
-              // ✅ Add download link
-              const backupLink = document.createElement("a");
-              backupLink.href = e.target.result;
-              backupLink.download = `photo_${Date.now()}.jpg`;
-              backupLink.textContent = "📥 Tap to save to device";
-              backupLink.className = "photo-download-link";
-              cell.appendChild(backupLink);
-            };
+              // ✅ Add download link (to download image to ipad)
+             // const backupLink = document.createElement("a");
+             // backupLink.href = e.target.result;
+             // backupLink.download = `photo_${Date.now()}.jpg`;
+             // backupLink.textContent = "📥 Tap to save to device";
+             // backupLink.className = "photo-download-link";
+             // cell.appendChild(backupLink);
+              };
             
             reader.readAsDataURL(file);
           }
@@ -901,8 +901,6 @@ if (!isBlank) {
 
 });
 
-
-
   formData.manpowerHours = Array.from(document.querySelectorAll(".hour-cell input")).map(i => i.value);
   formData.equipmentHours = Array.from(document.querySelectorAll(".equip-hour-cell input")).map(i => i.value);
   formData.subcontractorHours = Array.from(document.querySelectorAll(".sub-hour-cell input")).map(i => i.value);
@@ -914,6 +912,13 @@ if (!isBlank) {
       formData.photos[`photo${index}`] = img.src;
     }
   });
+
+  // 🔥 Save photo descriptions
+formData.photoCaptions = {};
+document.querySelectorAll(".photo-description").forEach((input, index) => {
+  formData.photoCaptions[`caption${index}`] = input.value;
+});
+
 
   // 👇 NEW: Debug preview
   console.log("🔍 Form data to be saved:", formData);
@@ -1001,6 +1006,14 @@ data.subcontractorHours?.forEach((val, i) => {
     });
   }
 
+  // 🔥 Restore photo descriptions
+if (data.photoCaptions) {
+  document.querySelectorAll(".photo-description").forEach((input, index) => {
+    input.value = data.photoCaptions[`caption${index}`] || "";
+  });
+}
+
+
  // 🔥 Restore signature canvases
 document.querySelectorAll(".signature-canvas").forEach((canvas, index) => {
   const key = `signatureCanvas${index}`;
@@ -1056,6 +1069,11 @@ document.querySelectorAll(".photo-cell").forEach((cell, index) => {
   }
 });
 
+// 🔥 Save photo descriptions
+data.photoCaptions = {};
+document.querySelectorAll(".photo-description").forEach((input, index) => {
+  data.photoCaptions[`caption${index}`] = input.value;
+});
 
 
   data.manpowerHours = Array.from(document.querySelectorAll(".hour-cell input")).map(i => i.value);
@@ -1205,7 +1223,6 @@ document.getElementById("exportPdfBtn")?.addEventListener("click", async () => {
     format: [widthInInches, heightInInches]
   });
   
-
   // Add the image to the PDF
   pdf.addImage(imgData, 'JPEG', 0, 0, widthInInches, heightInInches);
 
@@ -1216,12 +1233,85 @@ document.getElementById("exportPdfBtn")?.addEventListener("click", async () => {
   const dd = String(today.getDate()).padStart(2, '0');
   const dateStr = `${yyyy}${mm}${dd}`;
 
+  // 🔍 Extract project number
   const projectNumber = document.getElementById("projectNumberSelect")?.value?.trim().replace(/\s+/g, "_") || "####";
-  const filename = `DFR_Initials_DIG_${projectNumber}_${dateStr}.pdf`;
+
+  // 🔍 Extract initials from OMH Supervisor input
+  const supervisorFullName = document.getElementById("omhsupervisor")?.value?.trim() || "XX";
+  const nameParts = supervisorFullName.split(" ");
+  const initials = nameParts.map(part => part[0]?.toUpperCase()).join("").slice(0, 2) || "XX";
+
+  // ✅ Final filename
+  const filename = `DFR_${initials}_DIG_${projectNumber}_${dateStr}.pdf`;
+
 
   pdf.save(filename);
 });
 
+
+// --- Email PDF ---
+// Note: This will not attach the PDF directly due to browser security limitations
+// It will open the email client with a pre-filled subject and body
+// and the PDF will be saved in memory
+document.getElementById("emailPdfBtn")?.addEventListener("click", async () => {
+  const element = document.querySelector(".canvas");
+  window.scrollTo(0, 0); // Ensure everything is visible
+
+  const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+  const imgData = canvas.toDataURL('image/jpeg', 1.0);
+  const pxPerInch = 96;
+  const widthInInches = canvas.width / pxPerInch;
+  const heightInInches = canvas.height / pxPerInch;
+
+  const pdf = new jsPDF({
+    orientation: 'portrait',
+    unit: 'in',
+    format: [widthInInches, heightInInches]
+  });
+  pdf.addImage(imgData, 'JPEG', 0, 0, widthInInches, heightInInches);
+
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  const dateStr = `${yyyy}${mm}${dd}`;
+
+  const projectNumber = document.getElementById("projectNumberSelect")?.value?.trim().replace(/\s+/g, "_") || "####";
+  const supervisorFullName = document.getElementById("omhsupervisor")?.value?.trim() || "XX";
+  const nameParts = supervisorFullName.split(" ");
+  const initials = nameParts.map(part => part[0]?.toUpperCase()).join("").slice(0, 2) || "XX";
+
+  const filename = `DFR_${initials}_DIG_${projectNumber}_${dateStr}.pdf`;
+
+  // 🔥 Save PDF in memory
+  const pdfBlob = pdf.output("blob");
+
+  // ⛳ Open email client — this part doesn't attach the file directly (limitation of browser security)
+  const recipients = [
+  "tyler.anderson@ogilviemtn.ca",
+  "del.james@ogilviemtn.ca",
+  "jeremy.fossum@ogilviemtn.ca",
+  "alexandra.klimchuk@ogilviemtn.ca"
+].join(",");
+
+// Use filename directly as the subject
+const mailtoLink = `mailto:${recipients}?subject=${encodeURIComponent(filename)}&body=${encodeURIComponent(`Please find the Daily Field Report attached.\n\nFile: ${filename}`)}`;
+
+
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(pdfBlob);
+  a.download = filename;
+  a.style.display = "none";
+  document.body.appendChild(a);
+
+  // ⛳ Auto-click download silently
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    // ⛳ Trigger email open after short delay
+    window.location.href = mailtoLink;
+  }, 500);
+});
 
 
 // 🔁 Ensure autosave triggers before page refresh (F5, close, etc.)

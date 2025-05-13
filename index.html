@@ -17,22 +17,21 @@
   <meta name="description" content="OMH Daily Field Report">
   <meta name="keywords" content="OMH, Daily Field Report, Construction, Project Management">
 
-
   <title>Daily Field Report</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#1e3a5f" />
   
-
 </head>
 
 <body>
-    <div class="header-bar">
+    
+    <div class="pwa-wrapper">
+    <div class="canvas">
+      <div class="header-bar">
         <img src="assets/images/OMH Logo.png" alt="OMH Logo" class="logo" />
         <h1 class="title">DAILY FIELD REPORT</h1>
       </div>
-    <div class="pwa-wrapper">
-    <div class="canvas">
   <!-- Header Table -->
       <table class="header-table">
   <!--ROW 1-->
@@ -138,8 +137,6 @@
   </tr>
 </table>
 
-
-
 <!-- Manpower Table -->
 <table style="width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 14px;">
   <colgroup>
@@ -170,7 +167,7 @@
   <!-- Input Row 1 -->
   <tr class="manpower-row">
     <td><select class="manpowerSelect" id="manpowerselect1"><option>Select...</option></select></td>
-    <td><select class="classificationSelect" id="classifcationselect1"><option>Select...</option></select></td>
+    <td><select class="classificationSelect" id="classificationselect1"><option>Select...</option></select></td>
     <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
     <td class="center-checkbox"><input type="checkbox" id="checkbox1"/></td>
     <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
@@ -184,7 +181,7 @@
 <!-- Input Row 2 -->
 <tr class="manpower-row">
     <td><select class="manpowerSelect" id="manpowerselect2"><option>Select...</option></select></td>
-    <td><select class="classificationSelect" id="classifcationselect2"><option>Select...</option></select></td>
+    <td><select class="classificationSelect" id="classificationselect2"><option>Select...</option></select></td>
     <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
     <td class="center-checkbox"><input type="checkbox" id="checkbox2"/></td>
     <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
@@ -198,7 +195,7 @@
 <!-- Input Row 3 -->
 <tr class="manpower-row">
     <td><select class="manpowerSelect" id="manpowerselect3"><option>Select...</option></select></td>
-    <td><select class="classificationSelect" id="classifcationselect3"><option>Select...</option></select></td>
+    <td><select class="classificationSelect" id="classificationselect3"><option>Select...</option></select></td>
     <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
     <td class="center-checkbox"><input type="checkbox" id="checkbox3"/></td>
     <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
@@ -212,7 +209,7 @@
 <!-- Input Row 4 -->
 <tr class="manpower-row">
     <td><select class="manpowerSelect" id="manpowerselect4"><option>Select...</option></select></td>
-    <td><select class="classificationSelect" id="classifcationselect4"><option>Select...</option></select></td>
+    <td><select class="classificationSelect" id="classificationselect4"><option>Select...</option></select></td>
     <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
     <td class="center-checkbox"><input type="checkbox" id="checkbox4"/></td>
     <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
@@ -226,7 +223,7 @@
 <!-- Input Row 5 -->
 <tr class="manpower-row">
     <td><select class="manpowerSelect" id="manpowerselect5"><option>Select...</option></select></td>
-    <td><select class="classificationSelect" id="classifcationselect5"><option>Select...</option></select></td>
+    <td><select class="classificationSelect" id="classificationselect5"><option>Select...</option></select></td>
     <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
     <td class="center-checkbox"><input type="checkbox" id="checkbox5"/></td>
     <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
@@ -240,7 +237,7 @@
 <!-- Input Row 6 -->
 <tr class="manpower-row">
     <td><select class="manpowerSelect" id="manpowerselect6"><option>Select...</option></select></td>
-    <td><select class="classificationSelect" id="classifcationselect6"><option>Select...</option></select></td>
+    <td><select class="classificationSelect" id="classificationselect6"><option>Select...</option></select></td>
     <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
     <td class="center-checkbox"><input type="checkbox" id="checkbox6"/></td>
     <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
@@ -254,7 +251,7 @@
 <!-- Input Row 7 -->
 <tr class="manpower-row">
     <td><select class="manpowerSelect" id="manpowerselect7"><option>Select...</option></select></td>
-    <td><select class="classificationSelect" id="classifcationselect7"><option>Select...</option></select></td>
+    <td><select class="classificationSelect" id="classificationselect7"><option>Select...</option></select></td>
     <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
     <td class="center-checkbox"><input type="checkbox" id="checkbox7"/></td>
     <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
@@ -268,7 +265,7 @@
 <!-- Input Row 8 -->
 <tr class="manpower-row">
     <td><select class="manpowerSelect" id="manpowerselect8"><option>Select...</option></select></td>
-    <td><select class="classificationSelect" id="classifcationselect8"><option>Select...</option></select></td>
+    <td><select class="classificationSelect" id="classificationselect8"><option>Select...</option></select></td>
     <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
     <td class="center-checkbox"><input type="checkbox" id="checkbox8"/></td>
     <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
@@ -282,7 +279,7 @@
 <!-- Input Row 9 -->
 <tr class="manpower-row">
     <td><select class="manpowerSelect" id="manpowerselect9"><option>Select...</option></select></td>
-    <td><select class="classificationSelect" id="classifcationselect9"><option>Select...</option></select></td>
+    <td><select class="classificationSelect" id="classificationselect9"><option>Select...</option></select></td>
     <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
     <td class="center-checkbox"><input type="checkbox" id="checkbox9"/></td>
     <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
@@ -296,7 +293,7 @@
 <!-- Input Row 10 -->
 <tr class="manpower-row">
     <td><select class="manpowerSelect" id="manpowerselect10"><option>Select...</option></select></td>
-    <td><select class="classificationSelect" id="classifcationselect10"><option>Select...</option></select></td>
+    <td><select class="classificationSelect" id="classificationselect10"><option>Select...</option></select></td>
     <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
     <td class="center-checkbox"><input type="checkbox" id="checkbox10"/></td>
     <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
@@ -310,7 +307,7 @@
 <!-- Input Row 11 -->
 <tr class="manpower-row">
     <td><select class="manpowerSelect" id="manpowerselect11"><option>Select...</option></select></td>
-    <td><select class="classificationSelect" id="classifcationselect11"><option>Select...</option></select></td>
+    <td><select class="classificationSelect" id="classificationselect11"><option>Select...</option></select></td>
     <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
     <td class="center-checkbox"><input type="checkbox" id="checkbox11"/></td>
     <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
@@ -324,7 +321,7 @@
 <!-- Input Row 12 -->
 <tr class="manpower-row">
    <td><select class="manpowerSelect" id="manpowerselect12"><option>Select...</option></select></td>
-    <td><select class="classificationSelect" id="classifcationselect12"><option>Select...</option></select></td>
+    <td><select class="classificationSelect" id="classificationselect12"><option>Select...</option></select></td>
     <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
     <td class="center-checkbox"><input type="checkbox" id="checkbox12"/></td>
     <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
@@ -338,7 +335,7 @@
 <!-- Input Row 13 -->
 <tr class="manpower-row">
     <td><select class="manpowerSelect" id="manpowerselect13"><option>Select...</option></select></td>
-    <td><select class="classificationSelect" id="classifcationselect13"><option>Select...</option></select></td>
+    <td><select class="classificationSelect" id="classificationselect13"><option>Select...</option></select></td>
     <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
     <td class="center-checkbox"><input type="checkbox" id="checkbox13"/></td>
     <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
@@ -352,7 +349,7 @@
 <!-- Input Row 14 -->
 <tr class="manpower-row">
    <td><select class="manpowerSelect" id="manpowerselect14"><option>Select...</option></select></td>
-    <td><select class="classificationSelect" id="classifcationselect14"><option>Select...</option></select></td>
+    <td><select class="classificationSelect" id="classificationselect14"><option>Select...</option></select></td>
     <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
     <td class="center-checkbox"><input type="checkbox" id="checkbox14"/></td>
     <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
@@ -366,7 +363,7 @@
 <!-- Input Row 15 -->
 <tr class="manpower-row">
     <td><select class="manpowerSelect" id="manpowerselect15"><option>Select...</option></select></td>
-    <td><select class="classificationSelect" id="classifcationselect15"><option>Select...</option></select></td>
+    <td><select class="classificationSelect" id="classificationselect15"><option>Select...</option></select></td>
     <td class="total-cell"><input type="number" value="0.00" readonly class="total-field" /></td>
     <td class="center-checkbox"><input type="checkbox" id="checkbox15"/></td>
     <td class="hour-cell"><input type="number" class="hour-input" step="0.5" min="0" /></td>
@@ -631,7 +628,6 @@
   </tr>
 </table>
 
-
 <!--Subcontractor Table-->
 
 <table class="subcontractor-table" style="width: 100%; table-layout: fixed;">
@@ -841,21 +837,60 @@
   </tr>
 </table>
 
-<!-- Photo Grid Table -->
-<table class="photo-grid-table" style="width: 100%; table-layout: fixed; margin-top: 20px;">
-  <colgroup>
-    <col style="width: 50%;">
-    <col style="width: 50%;">
-  </colgroup>
-  <tr>
-    <td><div class="photo-cell" data-index="0"></div></td>
-    <td><div class="photo-cell" data-index="1"></div></td>
-  </tr>
-  <tr>
-    <td><div class="photo-cell" data-index="2"></div></td>
-    <td><div class="photo-cell" data-index="3"></div></td>
-  </tr>
-</table>
+<!-- 🔥 NEW PHOTO TABLE -->
+<!-- 🔁 Replace .photo-grid with this table-based layout -->
+ <table class="photo-table" style="width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 20px;">
+  <thead>
+    <tr>
+      <th colspan="2" style="background-color: #d0dfe8; text-align: center; font-size: 16px; padding: 12px;">
+        📷 Field Photos
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <div class="photo-wrapper">
+          <div class="photo-cell" data-index="0"></div>
+          <input type="text" class="photo-description" id="photoDesc0" placeholder="Photo 1 caption" />
+        </div>
+      </td>
+      <td>
+        <div class="photo-wrapper">
+          <div class="photo-cell" data-index="1"></div>
+          <input type="text" class="photo-description" id="photoDesc1" placeholder="Photo 2 caption" />
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="photo-wrapper">
+          <div class="photo-cell" data-index="2"></div>
+          <input type="text" class="photo-description" id="photoDesc2" placeholder="Photo 3 caption" />
+        </div>
+      </td>
+      <td>
+        <div class="photo-wrapper">
+          <div class="photo-cell" data-index="3"></div>
+          <input type="text" class="photo-description" id="photoDesc3" placeholder="Photo 4 caption" />
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="photo-wrapper">
+          <div class="photo-cell" data-index="4"></div>
+          <input type="text" class="photo-description" id="photoDesc4" placeholder="Photo 5 caption" />
+        </div>
+      </td>
+      <td>
+        <div class="photo-wrapper">
+          <div class="photo-cell" data-index="5"></div>
+          <input type="text" class="photo-description" id="photoDesc5" placeholder="Photo 6 caption" />
+        </div>
+      </td>
+    </tr>
+  </tbody>
 
 <!-- Footer Notice and Signature Row -->
 <table style="width: 100%; border-collapse: collapse; margin-top: 20px;" border="1">
@@ -872,7 +907,6 @@
       <input type="text" id="clientRepPosition" placeholder="Enter name and title..." />
     </td>
     
-    
     <td style="background-color: #c5d9f1; text-align: center; width: 15%;">Signature:</td>
     <!-- Signature Field -->
 <td style="background-color: #dbe5f1; width: 35%;">
@@ -886,38 +920,28 @@
     <button type="button" class="toggle-signature">✍️ Sign</button>
   </div>
   
-  
 </td>
   </tr>
 </table>
 
-
 <!-- Save, Load, Export, Reset Buttons -->
-<div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
-  <!-- Left -->
-  <div>
-    <button id="saveFormBtn" style="padding: 8px 16px; font-size: 14px;">💾 Save Form</button>
-    <button id="loadFormBtn" style="padding: 8px 16px; font-size: 14px;">📂 Load Form</button>
+<div class="button-bar">
+  <div class="button-left">
+    <button id="saveFormBtn" class="action-btn">💾 Save Form</button>
+    <button id="loadFormBtn" class="action-btn">📂 Load Form</button>
     <input type="file" id="loadInput" style="display: none;" accept=".json">
   </div>
 
-  <!-- Center -->
-  <div>
-    <button id="exportPdfBtn"  style="padding: 8px 16px;
-    font-size: 14px;
-    background-color: #e0f7fa;
-    border: 1px solid #00838f;
-    margin-left: -130px;">🧾 Export to PDF</button>
-    
+  <div class="button-center-wrap">
+    <button id="exportPdfBtn" class="action-btn export-btn">🧾 Export to PDF</button>
+    <button id="emailPdfBtn" class="action-btn email-btn">📧 Email</button>
   </div>
 
-  <!-- Right -->
-  <div>
-    <button id="resetFormBtn" style="padding: 8px 16px; font-size: 14px; background-color: #fdd; border: 1px solid #f00;">♻️ Reset Form</button>
+  <div class="button-right">
+    <button id="resetFormBtn" class="action-btn reset-btn">♻️ Reset Form</button>
   </div>
 </div>
 
-</div>
 
 <!-- Optional: Service worker registration -->
 <script>
@@ -940,10 +964,8 @@
   console.log("jsPDF loaded?", typeof jsPDF);
 </script>
 
-
 <!-- ✅ Your custom script (must come AFTER the libraries above) -->
 <script src="script.js"></script>
-
 
 </body>
 </html>
