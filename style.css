@@ -7,17 +7,23 @@ body {
     min-height: 100vh;
   }
   
-  .canvas {
-  width: 100%;
-  max-width: 2550px;
+ .canvas {
+  width: 2550px;
   margin: 0 auto;
   padding: 30px;
   background-color: white;
   box-sizing: border-box;
 }
 
+.pwa-wrapper {
+  width: 100vw;
+  height: 100vh;
+  overflow-x: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
 
-  
+
   /* Logo + Title Row */
   .logo-cell {
     width: 150px;
