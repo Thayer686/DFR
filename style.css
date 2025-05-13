@@ -7,12 +7,12 @@ body {
     min-height: 100vh;
   }
   
- .canvas {
-  width: 100%;
-  max-width: 2550px;
-  margin: 0 auto;
-  padding: 30px;
+  .canvas {
+  transform-origin: top left;
+  width: 2550px;
+  height: auto;
   background-color: white;
+  padding: 30px;
   box-sizing: border-box;
 }
 

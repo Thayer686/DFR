@@ -968,6 +968,25 @@
 <!-- ✅ Your custom script (must come AFTER the libraries above) -->
 <script src="script.js"></script>
 
+
+<!-- Optional: Scale canvas to fit the screen -->
+<script>
+function scaleCanvasToFit() {
+  const canvas = document.querySelector('.canvas');
+  if (!canvas) return;
+
+  const scale = window.innerWidth / 2550;
+  canvas.style.transform = `scale(${scale})`;
+
+  // Optional: adjust body height to fit scaled content
+  document.body.style.height = (canvas.offsetHeight * scale) + 'px';
+}
+
+window.addEventListener('load', scaleCanvasToFit);
+window.addEventListener('resize', scaleCanvasToFit);
+</script>
+
+
 </body>
 </html>
   
