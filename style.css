@@ -7,15 +7,15 @@ body {
     min-height: 100vh;
   }
   
-  .canvas {
-    width: 2550px;
-    min-width: 2550px;
-    max-width: 2550px;
-    margin: 0 auto;
-    padding: 30px;
-    background-color: white;
-    box-sizing: border-box;
-  }
+ .canvas {
+  width: 100%;
+  max-width: 2550px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: white;
+  box-sizing: border-box;
+}
+
   
   /* Logo + Title Row */
   .logo-cell {
