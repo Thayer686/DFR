@@ -1212,7 +1212,8 @@ document.getElementById("exportPdfBtn")?.addEventListener("click", async () => {
 });
 
 
-  const imgData = canvas.toDataURL('image/png');
+  const imgData = canvas.toDataURL('image/jpeg', 1.0);
+
 
 
   // Convert canvas size to inches for jsPDF

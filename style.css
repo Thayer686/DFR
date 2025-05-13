@@ -509,8 +509,12 @@ input[type="date"] {
   min-height: 36px !important;
   height: auto !important;
   box-sizing: border-box !important;
-  -webkit-appearance: none !important; /* remove iOS styling */
-  align: left !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  text-align: left !important;
+  text-align-last: left !important; /* Helps on Safari/iOS */
+  direction: ltr !important; /* Ensures left-to-right layout */
+
 }
 
 
