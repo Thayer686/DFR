@@ -877,8 +877,6 @@ function attachUnitIdListeners() {
     }
     
 
-
-
 // --- Manual Save Function ---
 function saveForm() {
   const formData = {};
@@ -922,18 +920,24 @@ document.querySelectorAll(".photo-description").forEach((input, index) => {
 
 
   // 👇 NEW: Debug preview
-  console.log("🔍 Form data to be saved:", formData);
-  alert("✅ Form data logged to console for debug.\nOpen DevTools (F12 > Console) to view it.");
+  // console.log("🔍 Form data to be saved:", formData);
+  // alert("✅ Form data logged to console for debug.\nOpen DevTools (F12 > Console) to view it.");
+
 
   const today = new Date();
-  const dd = String(today.getDate()).padStart(2, '0');
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const yyyy = today.getFullYear();
-  const dateStr = `${dd}_${mm}_${yyyy}`;
-  const projectNumber = document.getElementById("projectNumberSelect")?.value?.trim().replace(/\\s+/g, "_") || "####";
-  const defaultFilename = `DFR_Initials_DIG_${projectNumber}_${dateStr}`;
-  const filename = prompt("Enter a filename to save:", defaultFilename);
-  if (!filename) return;
+const dd = String(today.getDate()).padStart(2, '0');
+const mm = String(today.getMonth() + 1).padStart(2, '0');
+const yyyy = today.getFullYear();
+const dateStr = `${dd}_${mm}_${yyyy}`;
+
+const projectNumber = document.getElementById("projectNumberSelect")?.value?.trim().replace(/\s+/g, "_") || "####";
+const supervisorFullName = document.getElementById("omhsupervisor")?.value?.trim() || "XX";
+const nameParts = supervisorFullName.split(" ");
+const initials = nameParts.map(part => part[0]?.toUpperCase()).join("").slice(0, 2) || "XX";
+
+const defaultFilename = `DFR_${initials}_DIG_${projectNumber}_${dateStr}`;
+const filename = prompt("Enter a filename to save:", defaultFilename);
+if (!filename) return;
 
   const blob = new Blob([JSON.stringify(formData, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
@@ -1110,7 +1114,6 @@ function handleLoadFromFile() {
   reader.readAsText(file);
 }
 
-
 document.addEventListener("DOMContentLoaded", () => {
   loadLists().then(() => {
     attachAutosaveListeners();
@@ -1144,7 +1147,6 @@ if (cached) {
 
   });
 });
-
 
 document.getElementById("resetFormBtn")?.addEventListener("click", () => {
   const confirmReset = confirm("Are you sure you want to clear the form and reset everything?");
@@ -1211,10 +1213,7 @@ document.getElementById("exportPdfBtn")?.addEventListener("click", async () => {
   backgroundColor: null // optional: transparent background if needed
 });
 
-
   const imgData = canvas.toDataURL('image/jpeg', 1.0);
-
-
 
   // Convert canvas size to inches for jsPDF
   const pxPerInch = 96;
@@ -1253,28 +1252,11 @@ document.getElementById("exportPdfBtn")?.addEventListener("click", async () => {
   pdf.save(filename);
 });
 
-
 // --- Email PDF ---
 // Note: This will not attach the PDF directly due to browser security limitations
 // It will open the email client with a pre-filled subject and body
 // and the PDF will be saved in memory
-document.getElementById("emailPdfBtn")?.addEventListener("click", async () => {
-  const element = document.querySelector(".canvas");
-  window.scrollTo(0, 0); // Ensure everything is visible
-
-  const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-  const imgData = canvas.toDataURL('image/jpeg', 1.0);
-  const pxPerInch = 96;
-  const widthInInches = canvas.width / pxPerInch;
-  const heightInInches = canvas.height / pxPerInch;
-
-  const pdf = new jsPDF({
-    orientation: 'portrait',
-    unit: 'in',
-    format: [widthInInches, heightInInches]
-  });
-  pdf.addImage(imgData, 'JPEG', 0, 0, widthInInches, heightInInches);
-
+  document.getElementById("emailPdfBtn")?.addEventListener("click", () => {
   const today = new Date();
   const yyyy = today.getFullYear();
   const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -1286,49 +1268,29 @@ document.getElementById("emailPdfBtn")?.addEventListener("click", async () => {
   const nameParts = supervisorFullName.split(" ");
   const initials = nameParts.map(part => part[0]?.toUpperCase()).join("").slice(0, 2) || "XX";
 
-  const filename = `DFR_${initials}_DIG_${projectNumber}_${dateStr}.pdf`;
+  const filename = `DFR_${initials}_DIG_${projectNumber}_${dateStr}`;
 
-  // 🔥 Save PDF in memory
-  const pdfBlob = pdf.output("blob");
-
-  // ⛳ Open email client — this part doesn't attach the file directly (limitation of browser security)
   const recipients = [
-  "tyler.anderson@ogilviemtn.ca",
-  "del.james@ogilviemtn.ca",
-  "jeremy.fossum@ogilviemtn.ca",
-  "alexandra.klimchuk@ogilviemtn.ca"
-].join(",");
+    "tyler.anderson@ogilviemtn.ca",
+    "del.james@ogilviemtn.ca",
+    "jeremy.fossum@ogilviemtn.ca",
+    "alexandra.klimchuk@ogilviemtn.ca"
+  ].join(",");
 
-// Use filename directly as the subject
-const mailtoLink = `mailto:${recipients}?subject=${encodeURIComponent(filename)}&body=${encodeURIComponent(`Please find the Daily Field Report attached.\n\nFile: ${filename}`)}`;
+  const mailtoLink = `mailto:${recipients}?subject=${encodeURIComponent(filename)}&body=${encodeURIComponent(`Please find the Daily Field Report attached.\n\nFiles:\n- ${filename}.pdf\n- ${filename}.json`)}`;
 
+  alert(`📧 You're about to open your email app.
 
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(pdfBlob);
-  a.download = filename;
-  a.style.display = "none";
-  document.body.appendChild(a);
+Before proceeding, make sure you've already:
+✅ Clicked **Export to PDF**
+✅ Clicked **Save Form** (JSON)
 
-  // ⛳ Auto-click download silently
-  a.click();
-  setTimeout(() => {
-    document.body.removeChild(a);
-    // ⛳ Trigger email open after short delay
-    window.location.href = mailtoLink;
-  }, 500);
+📂 You can find the files in the **Files** app > **Downloads**.
+
+Then attach:
+📎 ${filename}.pdf
+📎 ${filename}.json`);
+
+  // Open email client
+  window.location.href = mailtoLink;
 });
-
-
-
-
-
-// 🔁 Ensure autosave triggers before page refresh (F5, close, etc.)
-window.addEventListener("beforeunload", autoSaveFormToCache);
-
-
-
-
-
-
-
-
