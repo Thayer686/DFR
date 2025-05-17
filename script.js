@@ -462,6 +462,26 @@ const activityMap = {
       attachEquipmentRowListeners();
       attachSubcontractorRowListeners();
       attachUnitIdListeners();
+
+      // ✅ Make all <select> elements searchable using Tom Select
+document.querySelectorAll('select').forEach(select => {
+  new TomSelect(select, {
+    create: false,
+    sortField: {
+      field: "text",
+      direction: "asc"
+    },
+    placeholder: "Select...",
+    render: {
+      item: function(data, escape) {
+        // ✅✅✅ NEW: render placeholder properly for PDF + UI
+        return data.text ? `<div>${escape(data.text)}</div>` : "";
+      }
+    }
+  });
+});
+
+
     });
 }
 
@@ -691,10 +711,15 @@ function linkTopToBottomCostCodesWithOverride() {
         let isSynced = true;
 
         top.addEventListener("change", () => {
-          if (isSynced) {
-            bottom.value = top.value;
-          }
-        });
+  if (isSynced) {
+    if (bottom.tomselect) {
+      bottom.tomselect.setValue(top.value);
+    } else {
+      bottom.value = top.value;
+    }
+  }
+});
+
 
         bottom.addEventListener("input", () => {
           if (bottom.value !== top.value) {
@@ -952,11 +977,17 @@ function restoreForm(data) {
     if (["photos", "manpowerHours", "equipmentHours", "subcontractorHours"].includes(id)) return;
     const el = document.getElementById(id);
     if (el) {
-      if (el.type === "checkbox") {
-        el.checked = data[id];
-      } else {
-        el.value = data[id];
-      }
+  if (el.type === "checkbox") {
+    el.checked = data[id];
+  } else {
+    el.value = data[id];
+
+    // ✅ Trigger Tom Select update if it exists
+    if (el.tomselect) {
+      el.tomselect.setValue(data[id]);
+    }
+  }
+
       el.dispatchEvent(new Event("input", { bubbles: true }));
       el.dispatchEvent(new Event("change", { bubbles: true }));
     }
@@ -1161,6 +1192,15 @@ document.getElementById("resetFormBtn")?.addEventListener("click", () => {
     }
     el.dispatchEvent(new Event("input", { bubbles: true }));
     el.dispatchEvent(new Event("change", { bubbles: true }));
+
+    // ✅ Clear Tom Select values
+document.querySelectorAll("select").forEach(select => {
+  if (select.tomselect) {
+    select.tomselect.clear();  // Clears the visible value
+  }
+});
+
+
   });
 
   // Clear dynamic totals
@@ -1205,6 +1245,14 @@ document.getElementById("exportPdfBtn")?.addEventListener("click", async () => {
 
   // Scroll to top to avoid offset capture
   window.scrollTo(0, 0);
+
+  // Remove Tom Select before export
+document.querySelectorAll('select').forEach(select => {
+  if (select.tomselect) {
+    select.tomselect.destroy();  // remove Tom Select styling
+  }
+});
+
 
   // Render the canvas from the visible form
   const canvas = await html2canvas(element, {

@@ -517,6 +517,26 @@ input[type="date"] {
 
 }
 
+/* TOM SELECT STYLES */
+
+/* ✅ Force Tom Select dropdowns to have solid white background */
+.ts-control {
+  background-color: #fff !important;
+}
+
+.ts-dropdown {
+  background-color: #fff !important;
+}
+
+.ts-control:empty::after {
+  content: attr(data-placeholder);
+  color: #888;
+  padding-left: 6px;
+  line-height: 36px;
+  display: block;
+}
+
+
 
 
 
